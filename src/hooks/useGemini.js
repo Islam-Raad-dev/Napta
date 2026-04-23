@@ -3,13 +3,12 @@ import { useState } from 'react';
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY?.trim();
 
-// ✅ نماذج OpenRouter للرؤية (مجانية)
+
 const OPENROUTER_MODELS = [
   "nvidia/nemotron-nano-12b-v2-vl:free",
   "openrouter/free",
 ];
 
-// ✅ نماذج جوجل المباشرة للتجربة بالترتيب (محدثة لعام 2026)
 const GEMINI_DIRECT_MODELS = [
   "gemini-2.5-flash",
   "gemini-2.0-flash",
@@ -48,7 +47,6 @@ const PROMPT = `أنت خبير في علم النبات والزراعة. قم 
 - لا تضف أي نص أو شرح خارج حدود الـ JSON.`;
 
 const callGeminiDirect = async (modelName, base64Data, mimeType) => {
-  // محاولة v1beta أولاً لضمان دعم الفلاش
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
   
   const response = await fetchWithTimeout(url, {
@@ -115,20 +113,17 @@ const callOpenRouter = async (model, base64Image) => {
 const extractJSON = (text) => {
   try {
     let cleanJson = text;
-    // تنظيف علامات الماركدون إذا وجدت
     if (cleanJson.includes("```")) {
       const match = cleanJson.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
       if (match) cleanJson = match[1];
     }
     
-    // استخراج من أول { إلى آخر }
     const start = cleanJson.indexOf('{');
     const end = cleanJson.lastIndexOf('}');
     if (start !== -1 && end !== -1) {
       cleanJson = cleanJson.substring(start, end + 1);
     }
 
-    // تنظيف السلاسل النصية من الأسطر الجديدة غير المهربة (والتي تسبب خطأ في JSON.parse)
     cleanJson = cleanJson.replace(/(?<=:\s*")([\s\S]*?)(?="[,}])/g, (match) => {
       return match.replace(/\n/g, '\\n').replace(/\r/g, '');
     });
