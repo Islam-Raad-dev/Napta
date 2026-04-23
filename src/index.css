@@ -3,45 +3,38 @@
 @tailwind utilities;
 
 :root {
-  --primary-dark: #1A3021;
-  --ivory: #F9F9F9;
-  --accent-mustard: #E1AD01;
-  --charcoal: #2D2D2D;
+  --primary-dark: oklch(28% 0.04 150);
+  --ivory: oklch(98% 0.005 150);
+  --accent-mustard: oklch(76% 0.17 85);
+  --dark-base: oklch(22% 0.03 150);
+  --dark-deep: oklch(18% 0.02 150);
+}
+
+html, body {
+  direction: rtl;
 }
 
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply bg-[#F9F9F9] dark:bg-[#1A3021] text-[#2D2D2D] dark:text-[#F9F9F9] transition-colors duration-300;
+  @apply bg-[#F9F9F9] dark:bg-[#122318] text-[#2D2D2D] dark:text-[#F9F9F9] transition-colors duration-300;
   overflow-x: hidden;
 }
 
-.glass-morphism {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 32px 0 rgba(26, 48, 33, 0.05);
-  transition: all 0.3s ease;
+
+
+/* Focus-visible ring */
+:focus-visible {
+  outline: 2px solid var(--accent-mustard);
+  outline-offset: 2px;
 }
 
-.dark .glass-morphism {
-  background: rgba(13, 22, 16, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
-.lux-gradient {
-  background: linear-gradient(135deg, var(--primary-dark), #2a4d35);
-}
 
-.btn-3d {
-  @apply transition-all duration-200 active:translate-y-1 active:shadow-3d-btn-pressed;
-  box-shadow: 0 4px 0 0 #0D1911, 0 8px 15px rgba(0, 0, 0, 0.2);
-}
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
@@ -52,22 +45,98 @@ body {
   background: var(--ivory);
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: var(--dark-base);
+}
+
 ::-webkit-scrollbar-thumb {
   background: var(--primary-dark);
   border-radius: 10px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.dark ::-webkit-scrollbar-thumb {
   background: #2a4d35;
 }
 
-/* Animations */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-mustard);
 }
 
-.float-animation {
-  animation: float 6s ease-in-out infinite;
+
+
+/* Background Utilities */
+.organic-mesh {
+  background-image: 
+    radial-gradient(at 0% 0%, oklch(76% 0.17 85 / 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, oklch(28% 0.04 150 / 0.03) 0px, transparent 50%);
+}
+
+.dark .organic-mesh {
+  background-image: 
+    radial-gradient(at 0% 0%, oklch(76% 0.17 85 / 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, oklch(28% 0.04 150 / 0.05) 0px, transparent 50%);
+}
+
+.bg-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, oklch(28% 0.04 150 / 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(28% 0.04 150 / 0.02) 1px, transparent 1px);
+}
+
+.dark .bg-grid {
+  background-image: 
+    linear-gradient(to right, oklch(100% 0 0 / 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(100% 0 0 / 0.02) 1px, transparent 1px);
+}
+
+/* Print Optimization */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hide everything by default */
+  body > * {
+    display: none !important;
+  }
+
+  /* Only show the results container and its parents if necessary */
+  #root, #root > div, main {
+    display: block !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide all siblings of results */
+  main > *:not(#results) {
+    display: none !important;
+  }
+
+  #results {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Force background colors for a premium look even in print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
