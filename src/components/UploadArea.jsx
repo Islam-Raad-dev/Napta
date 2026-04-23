@@ -1,16 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { Upload, X, ShieldCheck, Zap, HeartPulse } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Upload, X, ArrowLeft, ShieldCheck } from 'lucide-react';
 
 const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
-  const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result);
@@ -19,121 +17,168 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
     }
   };
 
-  const handleUpload = () => {
-    if (preview) {
-      onAnalyze(preview);
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const clearImage = () => {
-    setImage(null);
     setPreview(null);
   };
 
+  const editorialSteps = [
+    { num: "01", text: "التقط صورة واضحة للنبات" },
+    { num: "02", text: "ارفعها على منصة نبتة" },
+    { num: "03", text: "احصل على التشخيص والخطة العلاجية" }
+  ];
+
   return (
-    <section ref={ref} className="py-24 bg-primary-light dark:bg-[#1A3021]/50 relative overflow-hidden font-cairo transition-colors duration-300">
-      <div className="container mx-auto px-8 max-w-4xl">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-primary-dark dark:text-white mb-4 transition-colors">اختبر صحة نبتتك الآن</h2>
-          <p className="text-lg text-primary-dark/60 dark:text-white/60 transition-colors">ارفع صورة واضحة لنبتتك وسيقوم الطبيب الذكي بتحليلها فوراً</p>
+    <section ref={ref} className="w-full py-20 relative overflow-hidden" aria-label="منطقة رفع الصور">
+      <div className="container mx-auto px-8 max-w-5xl relative z-10">
+        
+        {/* Mixed Pass: Centered Bold Header */}
+        <div className="mb-20 text-center">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="text-4xl md:text-6xl lg:text-8xl font-black font-cairo text-primary-dark dark:text-white leading-tight tracking-tight"
+          >
+            حول هاتفك إلى <span className="text-accent-mustard italic">مختبر</span> زراعي ذكي.
+          </motion.h2>
         </div>
 
-        <div className="relative group">
-          <AnimatePresence mode="wait">
-            {!preview ? (
-              <motion.div 
-                key="dropzone"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                onClick={() => fileInputRef.current.click()}
-                className="w-full h-80 border-2 border-dashed border-primary-dark/20 dark:border-white/20 rounded-[2.5rem] flex flex-col items-center justify-center cursor-pointer hover:border-accent-mustard/40 hover:bg-accent-mustard/[0.02] transition-colors duration-500 bg-white dark:bg-[#0D1610] shadow-luxury"
-              >
-                <div className="w-16 h-16 rounded-3xl bg-primary-dark/5 dark:bg-white/5 flex items-center justify-center mb-6 group-hover:bg-accent-mustard/10 transition-colors">
-                  <Upload className="text-primary-dark dark:text-white w-8 h-8 group-hover:text-accent-mustard dark:group-hover:text-accent-mustard transition-colors" />
+        <div className="grid lg:grid-cols-12 gap-10 items-start">
+          {/* Main Dropzone: Architectural Precision */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-8 group"
+          >
+            <div 
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleDrop}
+              className={`relative rounded-[2rem] border-2 border-dashed transition-all duration-700 min-h-[350px] flex flex-col items-center justify-center p-8 md:p-10 overflow-hidden ${
+                preview 
+                  ? 'border-accent-mustard bg-primary-light dark:bg-dark-surface' 
+                  : 'border-primary-dark/20 dark:border-white/20 hover:border-accent-mustard/50 bg-white/50 dark:bg-white/[0.03]'
+              }`}
+            >
+              {!preview ? (
+                <div 
+                  className="text-center space-y-6 cursor-pointer relative z-10" 
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  <div className="relative inline-block group-hover:scale-105 transition-transform duration-700">
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-[1.5rem] bg-primary-dark dark:bg-white flex items-center justify-center text-white dark:text-primary-dark shadow-luxury relative z-10 transform -rotate-3 group-hover:rotate-0 transition-transform">
+                      <Upload className="w-8 h-8 md:w-10 md:h-10" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h2 className="text-2xl md:text-3xl font-black text-primary-dark dark:text-white font-cairo">
+                      أرفع الصورة <span className="text-accent-mustard italic">هنا</span>
+                    </h2>
+                    <p className="text-xs md:text-sm font-outfit text-primary-dark/30 dark:text-white/30 font-black uppercase tracking-[0.25em]">
+                      نظام تشخيص متطور
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xl font-bold text-primary-dark dark:text-white mb-2 transition-colors">اسحب الصورة هنا أو اضغط للرفع</p>
-                <p className="text-primary-dark/40 dark:text-white/40 text-sm transition-colors">ندعم JPEG, PNG وبحد أقصى 5 ميجابايت</p>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  className="hidden" 
-                  accept="image/*" 
-                  onChange={handleFileChange} 
-                />
-              </motion.div>
-            ) : (
-              <motion.div 
-                key="preview"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full relative rounded-[2.5rem] overflow-hidden shadow-luxury bg-white dark:bg-[#0D1610] p-4 transition-colors duration-300"
-              >
-                <div className="relative h-96 group/img">
-                  <img src={preview} alt="Plant Preview" className="w-full h-full object-cover rounded-3xl" />
-                  <button 
-                    onClick={clearImage}
-                    className="absolute top-4 left-4 p-2 bg-white/90 dark:bg-black/50 backdrop-blur-md rounded-xl text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg"
+              ) : (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="w-full flex flex-col items-center z-10"
+                >
+                  <div className="relative w-full aspect-[4/3] rounded-[1.5rem] overflow-hidden shadow-md border border-white/20">
+                    <img src={preview} alt="معاينة" className="w-full h-full object-cover" />
+                    <button 
+                      onClick={clearImage}
+                      className="absolute top-4 left-4 p-3 bg-red-600/90 text-white rounded-xl hover:bg-red-700 transition-all shadow-xl active:scale-95 backdrop-blur-md"
+                      title="إزالة الصورة"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                  
+                  <motion.div 
+                    initial={{ y: 15, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    className="mt-6 w-full flex flex-col md:flex-row items-center justify-between gap-6 p-8 rounded-[2rem] bg-primary-dark/95 dark:bg-dark-surface/90 backdrop-blur-xl border border-white/10 shadow-precise-luxury"
                   >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                
-                <div className="mt-8 flex items-center justify-center">
-                  <button 
-                    onClick={handleUpload}
-                    disabled={loading}
-                    className="px-16 py-4 bg-primary-dark text-white rounded-2xl font-bold text-lg btn-3d disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        <span>جاري التحليل...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="w-5 h-5 text-accent-mustard fill-accent-mustard" />
-                        <span>تحليل النبتة بالذكاء الاصطناعي</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                    <div className="text-right flex-1">
+                      <h3 className="text-xl md:text-2xl font-black text-white dark:text-white font-cairo mb-1">جاهز للتحليل</h3>
+                      <p className="text-base text-white/50 dark:text-white/40 font-cairo font-medium">نظام التشخيص الذكي بانتظار إشارتك</p>
+                    </div>
+                    <button 
+                      onClick={() => onAnalyze(preview)}
+                      disabled={loading}
+                      className="group flex items-center justify-center gap-4 px-10 py-4 bg-accent-mustard text-primary-dark font-black font-outfit text-xl rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-lg disabled:opacity-50"
+                    >
+                      {loading ? (
+                        <div className="w-6 h-6 border-4 border-primary-dark/30 border-t-primary-dark rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <span>ابدأ التحليل</span>
+                          <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+                        </>
+                      )}
+                    </button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </div>
+            
+            {/* Moved Protection Badge */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              className="mt-8 flex items-center justify-center gap-3 text-primary-dark/30 dark:text-white/30 font-black font-outfit uppercase tracking-[0.3em] text-xs md:text-sm"
+            >
+              <div className="h-px w-12 bg-primary-dark/10 dark:bg-white/10" />
+              <span>حماية ذكية متكاملة</span>
+              <ShieldCheck className="w-5 h-5 text-accent-mustard" />
+              <div className="h-px w-12 bg-primary-dark/10 dark:bg-white/10" />
+            </motion.div>
+          </motion.div>
 
-        {/* Benefits Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
-          <BenefitCard 
-            icon={<ShieldCheck className="w-6 h-6 text-accent-mustard" />} 
-            title="تحليل دقيق" 
-            desc="نستخدم أحدث موديلات Gemini Flash المخصصة للرؤية الحاسوبية." 
-          />
-          <BenefitCard 
-            icon={<HeartPulse className="w-6 h-6 text-accent-mustard" />} 
-            title="صحة مستدامة" 
-            desc="توصيات علمية للعناية بنباتاتك وضمان نموها بشكل سليم." 
-          />
-          <BenefitCard 
-            icon={<Zap className="w-6 h-6 text-accent-mustard" />} 
-            title="نتائج فورية" 
-            desc="احصل على التشخيص كاملاً في ثوانٍ معدودة دون عناء." 
-          />
+          {/* Mixed Pass: Editorial Steps with Tactical Scaled Numbers */}
+          <div className="lg:col-span-4 space-y-14 py-10 border-e-2 border-primary-dark/5 dark:border-white/5 pe-10">
+            {editorialSteps.map((step, i) => (
+              <div key={i} className="text-right space-y-3 relative group">
+                <span className="text-6xl md:text-8xl font-black font-outfit text-accent-mustard opacity-10 absolute -top-8 -left-4 group-hover:opacity-20 transition-opacity">
+                  {step.num}
+                </span>
+                <h4 className="text-2xl md:text-3xl font-black font-cairo text-primary-dark dark:text-white leading-tight relative z-10">
+                  {step.text}
+                </h4>
+                <div className="w-8 h-1 bg-accent-mustard/30 group-hover:w-16 transition-all" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+      <input 
+        type="file" 
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden" 
+        accept="image/*" 
+        aria-label="اختر ملف صورة"
+      />
     </section>
   );
 });
 
-const BenefitCard = ({ icon, title, desc }) => (
-  <div className="p-8 rounded-3xl bg-white/50 dark:bg-black/20 border border-primary-dark/5 dark:border-white/5 hover:border-accent-mustard/20 dark:hover:border-accent-mustard/20 hover:bg-white dark:hover:bg-black/40 transition-all duration-300">
-    <div className="w-12 h-12 rounded-2xl bg-accent-mustard/10 flex items-center justify-center mb-6">
-      {icon}
-    </div>
-    <h3 className="text-xl font-bold text-primary-dark dark:text-white mb-2 transition-colors">{title}</h3>
-    <p className="text-primary-dark/60 dark:text-white/60 text-sm leading-relaxed transition-colors">{desc}</p>
-  </div>
-);
-
+UploadArea.displayName = 'UploadArea';
 export default UploadArea;
