@@ -16,8 +16,9 @@ function App() {
 
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
-
   useEffect(() => {
+    document.documentElement.dir = 'rtl';
+    document.documentElement.lang = 'ar';
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
@@ -25,6 +26,11 @@ function App() {
       document.documentElement.classList.add('dark');
     }
   }, []);
+
+  // Scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -42,7 +48,7 @@ function App() {
       setCurrentPage('home');
       setTimeout(() => {
         if (uploadRef.current) uploadRef.current.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      }, 150);
     } else if (uploadRef.current) {
       uploadRef.current.scrollIntoView({ behavior: 'smooth' });
     }
@@ -50,29 +56,38 @@ function App() {
 
   const handleAnalyze = async (base64Image) => {
     await analyzeImage(base64Image);
-    // Scroll to results after a short delay to allow rendering
+    // ✅ الانتقال إلى قسم النتائج بعد اكتمال التحليل
     setTimeout(() => {
       const resultsSection = document.getElementById('results');
       if (resultsSection) {
-        resultsSection.scrollIntoView({ behavior: 'smooth' });
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 100);
+    }, 200);
   };
 
   return (
-    <div className="relative min-h-screen bg-[#F9F9F9] dark:bg-[#122318] text-[#2D2D2D] dark:text-[#F9F9F9] overflow-x-hidden selection:bg-accent-mustard/20 selection:text-primary-dark transition-colors duration-300">
-      <Navbar onStart={scrollToUpload} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+    <div dir="rtl" lang="ar" style={{ direction: 'rtl' }} className="relative min-h-screen bg-[#F9F9F9] dark:bg-dark-base text-[#2D2D2D] dark:text-[#F9F9F9] overflow-x-hidden selection:bg-accent-mustard/20 selection:text-primary-dark transition-colors duration-300">
+      <Navbar
+        onStart={scrollToUpload}
+        isDarkMode={isDarkMode}
+        toggleDarkMode={toggleDarkMode}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
       
-      <main>
+      <main id="main-content" aria-label="المحتوى الرئيسي">
         {currentPage === 'home' && (
           <>
             <Hero onStart={scrollToUpload} onDemoClick={() => setCurrentPage('demo')} />
             
-            <div className="relative z-10 -mt-20">
+            <div className="relative z-10 pt-12 md:pt-20">
               <UploadArea ref={uploadRef} onAnalyze={handleAnalyze} loading={loading} />
             </div>
 
-            <ResultsDisplay result={result} error={error} />
+            {/* ✅ id="results" مضاف هنا لكي يعمل التمرير التلقائي بعد التحليل */}
+            <div id="results" className="container mx-auto px-8 max-w-6xl py-8">
+              <ResultsDisplay result={result} error={error} />
+            </div>
           </>
         )}
         {currentPage === 'features' && <FeaturesPage />}
@@ -82,34 +97,54 @@ function App() {
         {currentPage === 'faq' && <FAQPage setCurrentPage={setCurrentPage} />}
       </main>
 
-      <footer className="py-12 bg-primary-dark dark:bg-[#0D1610] text-white/40 font-cairo text-sm text-center border-t border-white/5 transition-colors duration-300">
+      <footer
+        className="py-12 bg-primary-dark dark:bg-dark-deep text-white/40 font-cairo text-sm text-center border-t border-white/5 transition-colors duration-300"
+        role="contentinfo"
+      >
         <div className="container mx-auto px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8 text-white/60">
-             <div className="flex items-center gap-2 font-bold text-white">
-                <div className="w-8 h-8 rounded-lg bg-accent-mustard flex items-center justify-center text-primary-dark shadow-[0_0_15px_rgba(225,173,1,0.3)]">
-                  🌿
-                </div>
-                <span>نبتة الذكية</span>
-             </div>
-             <div className="flex items-center gap-8">
-                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('privacy'); }} className="hover:text-white transition-colors">سياسة الخصوصية</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('about'); setTimeout(() => { const el = document.getElementById('team-section'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100); }} className="hover:text-white transition-colors">اتصل بنا</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('faq'); }} className="hover:text-white transition-colors">الأسئلة الشائعة</a>
-             </div>
+            <div className="flex items-center gap-2 font-bold text-white">
+              <span>نبتة الذكية</span>
+              <div
+                className="w-8 h-8 rounded-lg bg-accent-mustard flex items-center justify-center text-primary-dark shadow-[0_0_15px_rgba(225,173,1,0.3)]"
+                aria-hidden="true"
+              >
+                🌿
+              </div>
+            </div>
+            <div className="flex items-center gap-8">
+              <button
+                onClick={() => setCurrentPage('privacy')}
+                className="hover:text-white transition-colors bg-transparent border-none cursor-pointer font-cairo text-white/60 text-sm focus-visible:ring-2 focus-visible:ring-accent-mustard rounded-lg"
+              >
+                سياسة الخصوصية
+              </button>
+              <button
+                onClick={() => {
+                  setCurrentPage('about');
+                  setTimeout(() => {
+                    const el = document.getElementById('team-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }, 100);
+                }}
+                className="hover:text-white transition-colors bg-transparent border-none cursor-pointer font-cairo text-white/60 text-sm focus-visible:ring-2 focus-visible:ring-accent-mustard rounded-lg"
+              >
+                اتصل بنا
+              </button>
+              <button
+                onClick={() => setCurrentPage('faq')}
+                className="hover:text-white transition-colors bg-transparent border-none cursor-pointer font-cairo text-white/60 text-sm focus-visible:ring-2 focus-visible:ring-accent-mustard rounded-lg"
+              >
+                الأسئلة الشائعة
+              </button>
+            </div>
           </div>
           <p>© 2026 منصة نبتة الذكية. جميع الحقوق محفوظة. مدعوم بالذكاء الاصطناعي.</p>
         </div>
       </footer>
 
-      {/* Cursor Glow effect */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-50 bg-[radial-gradient(circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(225,173,1,0.05)_0%,transparent_50%)]" 
-           onMouseMove={(e) => {
-             document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
-             document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
-           }} 
-      />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
