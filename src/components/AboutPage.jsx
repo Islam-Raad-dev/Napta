@@ -18,11 +18,11 @@ const AboutPage = () => {
           <span className="text-sm font-black font-outfit text-accent-mustard tracking-[0.4em] uppercase block">
             الرؤية والرسالة
           </span>
-          <h1 className="text-fluid-h2 font-black font-cairo text-primary-dark dark:text-white leading-[1.1] tracking-tight">
+          <h1 className="text-fluid-h2 font-black font-cairo text-primary-dark dark:text-white leading-relaxed tracking-tight">
             نحن نبني <br /> <span className="text-accent-mustard italic">جسراً</span> بين التكنولوجيا والطبيعة.
           </h1>
           <p className="text-xl md:text-2xl text-primary-dark/50 dark:text-white/50 max-w-2xl mr-0 ml-auto font-cairo leading-relaxed font-medium">
-            نبتة هي محاولة لإعادة صياغة علاقتنا بالبيئة، باستخدام قوة الذكاء الاصطناعي لحماية كل ورقة خضراء على هذا الكوكب.
+            نبتة هي محاولة لإعادة لاستخدام قوة الذكاء الاطناعي لحماية كل ورقة خضراء على هذا الكوكب.
           </p>
         </motion.div>
 
@@ -104,7 +104,7 @@ const AboutPage = () => {
                    "نبات صحي، حياة مستدامة للجميع"
                  </h3>
                  <p className="text-lg md:text-xl font-cairo leading-relaxed font-bold opacity-80">
-                   نسعى لتمكين كل مزارع وهواة الزراعة بأدوات احترافية كانت في السابق حكراً على المختبرات الكبرى.
+                   نسعى لتمكين كل مزارع بأدوات احترافية وبكل سهولة وسرعة .
                  </p>
                </div>
             </div>
