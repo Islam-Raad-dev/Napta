@@ -1,6 +1,6 @@
 # Napta AI - Smart Agriculture Assistant 🌿🤖
 
-**Napta AI** (نبتة الذكية) is an advanced, AI-powered agricultural diagnosis platform specifically optimized for the Iraqi environment. By leveraging the power of Large Language Models (LLMs) and Computer Vision, Napta allows farmers and plant enthusiasts to diagnose plant diseases instantly from a photo.
+**Napta AI** (نبتة الذكية) is an advanced, AI-powered agricultural diagnosis platform specifically optimized for the Iraqi environment. By leveraging cutting-edge Large Language Models (LLMs) and Computer Vision, Napta allows farmers and plant enthusiasts to diagnose plant diseases instantly from a photo.
 
 ---
 
@@ -10,7 +10,7 @@
 - **Localized Expertise**: The AI acts as an Iraqi agricultural expert, providing treatment recommendations and pesticide names available in the local Iraqi market.
 - **Smart Irrigation Tips**: Receive specialized watering advice tailored to the unique climate and weather conditions of Iraq.
 - **Modern UI/UX**: A high-fidelity "Glassmorphism" interface built with Tailwind CSS, featuring smooth animations and a responsive design.
-- **Powered by Gemini**: Utilizes Google's `Gemini 3 Flash` for fast and accurate image analysis.
+- **Multi-Model Intelligence**: Powered by the world's leading AI models from **Google (Gemini)**, **Anthropic (Claude)**, and **OpenAI (GPT)** to ensure the highest accuracy in visual recognition and linguistic analysis.
 
 ---
 
@@ -18,7 +18,10 @@
 
 - **Frontend**: [Vite](https://vitejs.dev/) + [Tailwind CSS](https://tailwindcss.com/)
 - **Language**: JavaScript (ES6+)
-- **AI Engine**: [Google Generative AI (Gemini API)](https://ai.google.dev/)
+- **AI Engines**: 
+  - [Google Generative AI](https://ai.google.dev/) (Gemini 1.5 Flash/Pro)
+  - [Anthropic](https://www.anthropic.com/) (Claude 3.5 Sonnet)
+  - [OpenAI](https://openai.com/) (GPT-4o)
 - **Deployment**: Optimized for [Netlify](https://www.netlify.com/)
 
 ---
