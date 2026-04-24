@@ -74,11 +74,13 @@ const Navbar = ({ onStart, isDarkMode, toggleDarkMode, currentPage, setCurrentPa
           ))}
         </div>
 
-        <motion.div 
+        <motion.button 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="flex items-center gap-3 md:gap-4"
+          onClick={() => handleNavClick('home')}
+          className="flex items-center gap-3 md:gap-4 bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-accent-mustard rounded-xl p-1"
+          aria-label="العودة للرئيسية"
         >
           <h1 className="text-xl md:text-3xl font-black tracking-tight text-primary-dark dark:text-white font-cairo">
             نبتة <span className="text-accent-mustard">الذكية</span>
@@ -87,7 +89,7 @@ const Navbar = ({ onStart, isDarkMode, toggleDarkMode, currentPage, setCurrentPa
             <Leaf className="w-6 h-6 md:w-7 md:h-7" />
             <Cpu className="absolute -bottom-1 -left-1 md:-bottom-1.5 md:-left-1.5 text-accent-mustard w-4 h-4 md:w-5 md:h-5 bg-primary-dark dark:bg-white rounded-full p-0.5 border-[1.5px] md:border-2 border-primary-light dark:border-dark-base" />
           </div>
-        </motion.div>
+        </motion.button>
       </nav>
 
       {/* Full-screen Mobile Menu Overlay */}
