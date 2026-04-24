@@ -63,7 +63,7 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="text-4xl md:text-6xl lg:text-8xl font-black font-cairo text-primary-dark dark:text-white leading-tight tracking-tight"
           >
-            حول هاتفك إلى <span className="text-accent-mustard italic">طبيب</span> زراعي ذكي.
+            حول جهازك إلى <span className="text-accent-mustard italic">طبيب</span> زراعي ذكي.
           </motion.h2>
         </div>
 
