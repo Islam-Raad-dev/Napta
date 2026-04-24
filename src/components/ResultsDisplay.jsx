@@ -81,6 +81,13 @@ const ResultsDisplay = ({ result, error }) => {
             <span className="text-[10px] font-black font-outfit uppercase tracking-[0.3em] opacity-40 mb-1">دقة التحليل</span>
             <span className="text-2xl md:text-3xl font-black font-outfit">{result.confidence}</span>
           </div>
+
+          {result.used_model && (
+            <div className="px-10 py-5 rounded-[2.5rem] bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-primary-dark/10 dark:border-white/10 shadow-precise-luxury flex flex-col items-center">
+              <span className="text-[10px] font-black font-cairo uppercase tracking-[0.1em] opacity-60 mb-1">نموذج الذكاء الاصطناعي</span>
+              <span className="text-lg md:text-xl font-bold font-outfit" dir="ltr">{result.used_model}</span>
+            </div>
+          )}
         </div>
       </motion.div>
 
