@@ -27,7 +27,7 @@ function App() {
     }
   }, []);
 
-  // Scroll to top on page change
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage]);
@@ -56,7 +56,7 @@ function App() {
 
   const handleAnalyze = async (base64Image) => {
     await analyzeImage(base64Image);
-    // ✅ الانتقال إلى قسم النتائج بعد اكتمال التحليل
+
     setTimeout(() => {
       const resultsSection = document.getElementById('results');
       if (resultsSection) {
@@ -84,7 +84,7 @@ function App() {
               <UploadArea ref={uploadRef} onAnalyze={handleAnalyze} loading={loading} />
             </div>
 
-            {/* ✅ id="results" مضاف هنا لكي يعمل التمرير التلقائي بعد التحليل */}
+            
             <div id="results" className="container mx-auto px-8 max-w-6xl py-8">
               <ResultsDisplay result={result} error={error} />
             </div>
