@@ -103,7 +103,11 @@ function App() {
       >
         <div className="container mx-auto px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8 text-white/60">
-            <div className="flex items-center gap-2 font-bold text-white">
+            <button 
+              onClick={() => setCurrentPage('home')}
+              className="flex items-center gap-2 font-bold text-white bg-transparent border-none cursor-pointer hover:text-accent-mustard transition-colors rounded-lg p-1 focus-visible:ring-2 focus-visible:ring-accent-mustard"
+              aria-label="العودة للرئيسية"
+            >
               <span>نبتة الذكية</span>
               <div
                 className="w-8 h-8 rounded-lg bg-accent-mustard flex items-center justify-center text-primary-dark shadow-[0_0_15px_rgba(225,173,1,0.3)]"
@@ -111,7 +115,7 @@ function App() {
               >
                 🌿
               </div>
-            </div>
+            </button>
             <div className="flex items-center gap-8">
               <button
                 onClick={() => setCurrentPage('privacy')}
