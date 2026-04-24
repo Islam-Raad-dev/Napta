@@ -24,7 +24,7 @@ body {
 
 
 
-/* Focus-visible ring */
+
 :focus-visible {
   outline: 2px solid var(--accent-mustard);
   outline-offset: 2px;
@@ -64,7 +64,7 @@ body {
 
 
 
-/* Background Utilities */
+
 .organic-mesh {
   background-image: 
     radial-gradient(at 0% 0%, oklch(76% 0.17 85 / 0.03) 0px, transparent 50%),
@@ -90,19 +90,19 @@ body {
     linear-gradient(to bottom, oklch(100% 0 0 / 0.02) 1px, transparent 1px);
 }
 
-/* Print Optimization */
+
 @media print {
   body {
     background: white !important;
     color: black !important;
   }
 
-  /* Hide everything by default */
+
   body > * {
     display: none !important;
   }
 
-  /* Only show the results container and its parents if necessary */
+
   #root, #root > div, main {
     display: block !important;
     background: transparent !important;
@@ -110,7 +110,7 @@ body {
     margin: 0 !important;
   }
 
-  /* Hide all siblings of results */
+
   main > *:not(#results) {
     display: none !important;
   }
@@ -122,14 +122,14 @@ body {
     width: 100% !important;
   }
 
-  /* Force background colors for a premium look even in print */
+
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 }
 
-/* Reduced motion */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
