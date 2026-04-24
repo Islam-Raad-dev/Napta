@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { Upload, X, ArrowLeft, ShieldCheck, Camera } from 'lucide-react';
+import CameraCapture from './CameraCapture';
 
 const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
   const [preview, setPreview] = useState(null);
+  const [showCamera, setShowCamera] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
@@ -41,6 +43,15 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
 
   return (
     <section ref={ref} className="w-full py-20 relative overflow-hidden" aria-label="منطقة رفع الصور">
+      <AnimatePresence>
+        {showCamera && (
+          <CameraCapture 
+            onCapture={(image) => setPreview(image)} 
+            onClose={() => setShowCamera(false)} 
+          />
+        )}
+      </AnimatePresence>
+
       <div className="container mx-auto px-8 max-w-5xl relative z-10">
         
         {/* Mixed Pass: Centered Bold Header */}
@@ -52,7 +63,7 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="text-4xl md:text-6xl lg:text-8xl font-black font-cairo text-primary-dark dark:text-white leading-tight tracking-tight"
           >
-            حول هاتفك إلى <span className="text-accent-mustard italic">مختبر</span> زراعي ذكي.
+            حول هاتفك إلى <span className="text-accent-mustard italic">طبيب</span> زراعي ذكي.
           </motion.h2>
         </div>
 
@@ -92,6 +103,26 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
                     <p className="text-xs md:text-sm font-outfit text-primary-dark/30 dark:text-white/30 font-black uppercase tracking-[0.25em]">
                       نظام تشخيص متطور
                     </p>
+                  </div>
+
+                  {/* Camera Toggle Button */}
+                  <div className="pt-4 flex flex-col items-center gap-4">
+                    <div className="flex items-center gap-4 w-full max-w-xs">
+                      <div className="h-px flex-1 bg-primary-dark/10 dark:bg-white/10" />
+                      <span className="text-[10px] font-bold text-primary-dark/20 dark:text-white/20 uppercase tracking-widest">أو</span>
+                      <div className="h-px flex-1 bg-primary-dark/10 dark:bg-white/10" />
+                    </div>
+                    
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowCamera(true);
+                      }}
+                      className="group/btn flex items-center gap-3 px-8 py-3 bg-white dark:bg-white/5 border border-primary-dark/10 dark:border-white/10 rounded-2xl hover:border-accent-mustard transition-all shadow-sm active:scale-95"
+                    >
+                      <Camera className="w-5 h-5 text-accent-mustard" />
+                      <span className="font-cairo font-bold text-primary-dark dark:text-white">افتح الكاميرا للتصوير</span>
+                    </button>
                   </div>
                 </div>
               ) : (
