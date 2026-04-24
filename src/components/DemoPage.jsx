@@ -8,7 +8,7 @@ const DemoPage = () => {
   
   // Dummy result for healthy plant (Mediterranean Olive)
   const dummyResultHealthy = {
-    plant_name: "شجرة الزيتون المباركة",
+    plant_name: "شجرة الزيتون",
     scientific_name: "Olea europaea",
     status: "سليم",
     confidence: "98%",
