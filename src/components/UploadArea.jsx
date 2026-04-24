@@ -177,7 +177,7 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
               className="mt-8 flex items-center justify-center gap-3 text-primary-dark/30 dark:text-white/30 font-black font-outfit uppercase tracking-[0.3em] text-xs md:text-sm"
             >
               <div className="h-px w-12 bg-primary-dark/10 dark:bg-white/10" />
-              <span>حماية ذكية متكاملة</span>
+              <span> تحليل ذكي متكامل </span>
               <ShieldCheck className="w-5 h-5 text-accent-mustard" />
               <div className="h-px w-12 bg-primary-dark/10 dark:bg-white/10" />
             </motion.div>
