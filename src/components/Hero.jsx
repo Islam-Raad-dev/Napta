@@ -99,7 +99,7 @@ const Hero = ({ onStart, onDemoClick }) => {
               onClick={onDemoClick}
               className="w-full sm:w-auto px-12 py-5 bg-transparent text-primary-dark dark:text-white font-cairo font-bold text-xl border border-primary-dark/20 dark:border-white/20 hover:border-accent-mustard hover:text-accent-mustard active:scale-[0.97] transition-all duration-500 rounded-2xl"
             >
-              مشاهدة عرض
+              شاهد عينة للتحليل 
             </button>
           </motion.div>
         </motion.div>
