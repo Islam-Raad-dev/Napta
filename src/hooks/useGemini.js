@@ -5,14 +5,29 @@ const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY?.trim();
 
 
 const OPENROUTER_MODELS = [
+  "google/gemini-2.5-pro",
+  "google/gemini-2.5-flash",
+  "google/gemini-2.0-pro-exp-02-05:free",
+  "google/gemini-2.0-flash-lite-preview-02-05:free",
+  "anthropic/claude-3.7-sonnet",
+  "anthropic/claude-3.5-sonnet",
+  "openai/gpt-4o",
+  "openai/gpt-4o-mini",
+  "qwen/qwen-vl-plus:free",
+  "x-ai/grok-vision-beta",
   "nvidia/nemotron-nano-12b-v2-vl:free",
-  "openrouter/free",
+  "openrouter/auto"
 ];
 
 const GEMINI_DIRECT_MODELS = [
+  "gemini-2.5-pro",
   "gemini-2.5-flash",
+  "gemini-2.0-pro-exp-02-05",
   "gemini-2.0-flash",
-  "gemini-3-flash-preview"
+  "gemini-2.0-flash-lite-preview-02-05",
+  "gemini-1.5-pro-latest",
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-flash-8b-latest"
 ];
 
 const PROMPT = `أنت خبير في علم النبات والزراعة. قم بتحليل الصورة المرفقة لنبات بعناية شديدة.
@@ -213,7 +228,7 @@ export const useGemini = () => {
       console.warn("[Nabta AI] فشل ضغط الصورة، سيتم استخدام الأصلية:", e.message);
     }
 
-    const processResult = (parsedResult) => {
+    const processResult = (parsedResult, usedModel) => {
       const finalResult = {
         plant_name: parsedResult.plant_name || parsedResult.name || "نبات غير محدد",
         scientific_name: parsedResult.scientific_name || parsedResult.scientific || "Unknown",
@@ -227,6 +242,7 @@ export const useGemini = () => {
             : parsedResult.recommendations) ||
           parsedResult.treatment ||
           "لا توجد تعليمات محددة.",
+        used_model: usedModel || "Unknown",
       };
       setResult(finalResult);
       setLoading(false);
@@ -250,7 +266,7 @@ export const useGemini = () => {
           if (textResponse) {
             console.log(`[Nabta AI] ✅ نجح التحليل باستخدام: ${modelName}`);
             const parsedResult = extractJSON(textResponse);
-            processResult(parsedResult);
+            processResult(parsedResult, `Google (${modelName})`);
             return;
           }
         } catch (err) {
@@ -269,7 +285,7 @@ export const useGemini = () => {
           if (textResponse) {
             console.log(`[Nabta AI] ✅ نجح التحليل عبر OpenRouter: ${model}`);
             const parsedResult = extractJSON(textResponse);
-            processResult(parsedResult);
+            processResult(parsedResult, `OpenRouter (${model})`);
             return;
           }
         } catch (err) {
