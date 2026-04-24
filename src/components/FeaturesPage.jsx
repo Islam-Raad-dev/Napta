@@ -7,13 +7,13 @@ const FeaturesPage = () => {
     {
       icon: <Activity className="w-10 h-10" />,
       title: "دقة في الرؤية",
-      description: "نعتمد على ذكاء اصطناعي فائق يدرك أدق التفاصيل في نباتاتك، ليوفر لك تشخيصاً موثوقاً يعكس حكمة التكنولوجيا الحديثة.",
+      description: "نعتمد على ذكاء اصطناعي فائق يدرك أدق التفاصيل في نباتاتك، ليوفر لك تشخيصاً موثوقاً يعكس تطور التكنولوجيا الحديثة.",
       side: 'right'
     },
     {
       icon: <FileCheck className="w-10 h-10" />,
       title: "رعاية مخصصة",
-      description: "نحن لا نكتفي بالتشخيص؛ بل نصمم لك خطة رعاية فريدة تناسب بيئة نباتك واحتياجاته الخاصة، لنحول العناية إلى متعة يومية.",
+      description: "نحن لا نكتفي بالتشخيص؛ بل نصمم لك خطة رعاية فريدة تناسب بيئة نباتك واحتياجاته الخاصة.",
       side: 'left'
     },
     {
@@ -46,10 +46,10 @@ const FeaturesPage = () => {
              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
              className="text-fluid-h1 font-black font-cairo text-primary-dark dark:text-white mb-8 tracking-tight leading-[1.1]"
           >
-            نبتة: هندسة <span className="text-accent-mustard italic">الحياة</span>.
+            مميزات <span className="text-accent-mustard italic">نبتة</span>.
           </motion.h1>
           <p className="text-xl md:text-2xl text-primary-dark/50 dark:text-white/50 font-cairo leading-[1.8] font-medium">
-            نجمع بين عمق الابتكار وسكون الجمال، لنقدم لك تجربة زراعية لا تُنسى تعيد تعريف علاقتك بالأرض.
+            نجمع بين الابتكار و الجمال، لنقدم لك تجربة زراعية لا تُنسى.
           </p>
         </div>
 
