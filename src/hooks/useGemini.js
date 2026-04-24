@@ -271,13 +271,13 @@ export const useGemini = () => {
           
           const textResponse = await callGeminiDirect(modelName, base64Data, mimeType);
           if (textResponse) {
-            console.log(`[Nabta AI] ✅ نجح التحليل باستخدام: ${modelName}`);
+            console.log(`[Nabta AI]  نجح التحليل باستخدام: ${modelName}`);
             const parsedResult = extractJSON(textResponse);
             processResult(parsedResult, `Google (${modelName})`);
             return;
           }
         } catch (err) {
-          console.warn(`[Nabta AI] ⚠️ فشل الموديل ${modelName}:`, err.message);
+          console.warn(`[Nabta AI]  فشل الموديل ${modelName}:`, err.message);
           lastError = err;
         }
       }
@@ -290,20 +290,20 @@ export const useGemini = () => {
           console.log(`[Nabta AI] جاري تجربة OpenRouter: ${model}`);
           const textResponse = await callOpenRouter(model, finalImage);
           if (textResponse) {
-            console.log(`[Nabta AI] ✅ نجح التحليل عبر OpenRouter: ${model}`);
+            console.log(`[Nabta AI]  نجح التحليل عبر OpenRouter: ${model}`);
             const parsedResult = extractJSON(textResponse);
             processResult(parsedResult, `OpenRouter (${model})`);
             return;
           }
         } catch (err) {
-          console.warn(`[Nabta AI] ⚠️ فشل OpenRouter ${model}:`, err.message);
+          console.warn(`[Nabta AI]  فشل OpenRouter ${model}:`, err.message);
           lastError = err;
         }
       }
     }
 
     console.error("[Nabta AI] فشلت جميع المحاولات:", lastError);
-    // إخفاء الأخطاء التقنية عن المستخدم وعرض رسالة ودية
+    
     const userFriendlyError = lastError?.message?.includes("endpoints") || lastError?.message?.includes("key")
       ? "عذراً، الخوادم مشغولة حالياً أو غير متاحة. يرجى المحاولة بعد قليل."
       : "عذراً، تعذّر التحليل. يرجى التأكد من أن الصورة واضحة أو المحاولة لاحقاً.";
