@@ -6,15 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    open: true,
-    // ── Proxy آمن: يُعيد توجيه /api/* للخادم المحلي (port 3001) ──────────
-    // المفاتيح تبقى في الخادم ولا تُضمَّن في bundle المتصفح أبداً
-    proxy: {
-      '/api': {
-        target:       'http://localhost:3001',
-        changeOrigin: true,
-      },
-    },
+    open: true
   },
   test: {
     globals: true,
