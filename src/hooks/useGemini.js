@@ -1,8 +1,5 @@
 import { useState } from 'react';
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY?.trim();
-
 
 const OPENROUTER_MODELS = [
   "google/gemini-2.5-pro",
@@ -30,7 +27,7 @@ const GEMINI_DIRECT_MODELS = [
   "gemini-1.5-flash-8b-latest"
 ];
 
-const PROMPT = `أنت خبير في علم النبات والزراعة. قم بتحليل الصورة المرفقة لنبات بعناية شديدة.
+const PROMPT = `أنت خبير عراقي في علم النبات والزراعةمتخصص في السوق العراقي والمنتجات العراقية. قم بتحليل الصورة المرفقة لنبات بعناية شديدة.
 
 1. إذا كانت الصورة لا تحتوي على نبات على الإطلاق (مثلاً: صورة شخص، حيوان، سيارة، جماد، إلخ)، يجب أن يكون الرد كالتالي:
    - "status": "ليس نبات".
@@ -69,22 +66,24 @@ const PROMPT = `أنت خبير في علم النبات والزراعة. قم 
 - لا تضف أي نص أو شرح خارج حدود الـ JSON.`;
 
 const callGeminiDirect = async (modelName, base64Data, mimeType) => {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
-  
-  const response = await fetchWithTimeout(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  // يرسل الطلب لـ /api/gemini (الـ proxy) — المفتاح يُضاف في server.js فقط
+  const response = await fetchWithTimeout('/api/gemini', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      contents: [{
-        parts: [
-          { text: PROMPT },
-          { inline_data: { mime_type: mimeType, data: base64Data } }
-        ]
-      }],
-      generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 1024,
-        responseMimeType: "application/json",
+      model: modelName,
+      body: {
+        contents: [{
+          parts: [
+            { text: PROMPT },
+            { inline_data: { mime_type: mimeType, data: base64Data } }
+          ]
+        }],
+        generationConfig: {
+          temperature: 0.1,
+          maxOutputTokens: 1024,
+          responseMimeType: 'application/json',
+        }
       }
     })
   });
@@ -99,27 +98,25 @@ const callGeminiDirect = async (modelName, base64Data, mimeType) => {
 };
 
 const callOpenRouter = async (model, base64Image) => {
-  const response = await fetchWithTimeout("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": "https://napta.app",
-      "X-Title": "Nabta AI",
-    },
+  // يرسل الطلب لـ /api/openrouter (الـ proxy) — المفتاح يُضاف في server.js فقط
+  const response = await fetchWithTimeout('/api/openrouter', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model,
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: PROMPT },
-            { type: "image_url", image_url: { url: base64Image } },
-          ],
-        },
-      ],
-      temperature: 0.1,
-      response_format: { type: "json_object" },
+      body: {
+        model,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: PROMPT },
+              { type: 'image_url', image_url: { url: base64Image } },
+            ],
+          },
+        ],
+        temperature: 0.1,
+        response_format: { type: 'json_object' },
+      }
     }),
   });
 
@@ -220,12 +217,7 @@ export const useGemini = () => {
       return;
     }
 
-    if (!GEMINI_API_KEY && !OPENROUTER_API_KEY) {
-      setError("مفاتيح API غير متوفرة. يرجى التحقق من إعدادات النظام.");
-      setLoading(false);
-      return;
-    }
-
+    // الخادم سيرد بخطأ 503 إذا لم تكن المفاتيح مضبوطة — لا حاجة لفحص هنا
     let finalImage = base64Image;
     try {
       console.log("[Nabta AI] جاري ضغط الصورة...");
@@ -257,48 +249,44 @@ export const useGemini = () => {
 
     let lastError = null;
 
-    // 1. تجربة كل نماذج Gemini Direct المتاحة
-    if (GEMINI_API_KEY) {
-      for (const modelName of GEMINI_DIRECT_MODELS) {
-        try {
-          console.log(`[Nabta AI] جاري تجربة نموذج جوجل: ${modelName}`);
-          
-          const parts = finalImage.split(";base64,");
-          if (parts.length < 2) continue;
-          
-          const mimeType = parts[0].split(":")[1] || "image/jpeg";
-          const base64Data = parts[1];
-          
-          const textResponse = await callGeminiDirect(modelName, base64Data, mimeType);
-          if (textResponse) {
-            console.log(`[Nabta AI]  نجح التحليل باستخدام: ${modelName}`);
-            const parsedResult = extractJSON(textResponse);
-            processResult(parsedResult, `Google (${modelName})`);
-            return;
-          }
-        } catch (err) {
-          console.warn(`[Nabta AI]  فشل الموديل ${modelName}:`, err.message);
-          lastError = err;
+    // 1. تجربة كل نماذج Gemini Direct المتاحة (الخادم يتحقق من توفر المفتاح)
+    for (const modelName of GEMINI_DIRECT_MODELS) {
+      try {
+        console.log(`[Nabta AI] جاري تجربة نموذج جوجل: ${modelName}`);
+        
+        const parts = finalImage.split(";base64,");
+        if (parts.length < 2) continue;
+        
+        const mimeType = parts[0].split(":")[1] || "image/jpeg";
+        const base64Data = parts[1];
+        
+        const textResponse = await callGeminiDirect(modelName, base64Data, mimeType);
+        if (textResponse) {
+          console.log(`[Nabta AI]  نجح التحليل باستخدام: ${modelName}`);
+          const parsedResult = extractJSON(textResponse);
+          processResult(parsedResult, `Google (${modelName})`);
+          return;
         }
+      } catch (err) {
+        console.warn(`[Nabta AI]  فشل الموديل ${modelName}:`, err.message);
+        lastError = err;
       }
     }
 
-    // 2. إذا فشل جوجل المباشر، ننتقل لـ OpenRouter
-    if (OPENROUTER_API_KEY) {
-      for (const model of OPENROUTER_MODELS) {
-        try {
-          console.log(`[Nabta AI] جاري تجربة OpenRouter: ${model}`);
-          const textResponse = await callOpenRouter(model, finalImage);
-          if (textResponse) {
-            console.log(`[Nabta AI]  نجح التحليل عبر OpenRouter: ${model}`);
-            const parsedResult = extractJSON(textResponse);
-            processResult(parsedResult, `OpenRouter (${model})`);
-            return;
-          }
-        } catch (err) {
-          console.warn(`[Nabta AI]  فشل OpenRouter ${model}:`, err.message);
-          lastError = err;
+    // 2. إذا فشل جوجل المباشر، ننتقل لـ OpenRouter (الخادم يتحقق من توفر المفتاح)
+    for (const model of OPENROUTER_MODELS) {
+      try {
+        console.log(`[Nabta AI] جاري تجربة OpenRouter: ${model}`);
+        const textResponse = await callOpenRouter(model, finalImage);
+        if (textResponse) {
+          console.log(`[Nabta AI]  نجح التحليل عبر OpenRouter: ${model}`);
+          const parsedResult = extractJSON(textResponse);
+          processResult(parsedResult, `OpenRouter (${model})`);
+          return;
         }
+      } catch (err) {
+        console.warn(`[Nabta AI]  فشل OpenRouter ${model}:`, err.message);
+        lastError = err;
       }
     }
 
