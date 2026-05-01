@@ -1,4 +1,6 @@
-Add All Projects/.env
+Add All Projects
+/.env
 /dist
 node_modules
 .env
+.env.example
