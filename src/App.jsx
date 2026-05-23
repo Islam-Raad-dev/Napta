@@ -16,6 +16,8 @@ function App() {
 
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
+  const [analyzedImages, setAnalyzedImages] = useState([]);
+
   useEffect(() => {
     document.documentElement.dir = 'rtl';
     document.documentElement.lang = 'ar';
@@ -54,8 +56,9 @@ function App() {
     }
   };
 
-  const handleAnalyze = async (base64Image) => {
-    await analyzeImage(base64Image);
+  const handleAnalyze = async (images) => {
+    setAnalyzedImages(images);
+    await analyzeImage(images);
 
     setTimeout(() => {
       const resultsSection = document.getElementById('results');
@@ -86,7 +89,7 @@ function App() {
 
             
             <div id="results" className="container mx-auto px-8 max-w-6xl py-8">
-              <ResultsDisplay result={result} error={error} />
+              <ResultsDisplay result={result} error={error} analyzedImages={analyzedImages} />
             </div>
           </>
         )}
