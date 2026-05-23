@@ -30,26 +30,37 @@ const GEMINI_DIRECT_MODELS = [
   "gemini-1.5-flash-8b-latest"
 ];
 
-const PROMPT = `أنت خبير في علم النبات والزراعة. قم بتحليل الصورة المرفقة لنبات بعناية شديدة.
+const PROMPT = `أنت خبير متميز وعالم نبات زراعي دقيق للغاية. قد يتم تزويدك بصورة واحدة أو عدة صور (حتى 4 صور) لنفس النبات من زوايا ومسافات مختلفة (لقطات عامة، أوراق مقربة، سيقان، ثمار، أو جذور). 
 
-1. إذا كانت الصورة لا تحتوي على نبات على الإطلاق (مثلاً: صورة شخص، حيوان، سيارة، جماد، إلخ)، يجب أن يكون الرد كالتالي:
+مهمتك هي تحليل كافة الصور المرفقة بدقة فائقة ومجهرية، وتقديم فحص طبي زراعي متكامل خالٍ من الأخطاء:
+
+1. إذا كانت الصور لا تحتوي على نبات على الإطلاق (مثلاً: صورة شخص، حيوان، سيارة، جماد، إلخ)، يجب أن يكون الرد كالتالي:
    - "status": "ليس نبات".
    - "plant_name": "غير معروف".
    - "scientific_name": "N/A".
-   - "diagnosis": "هذه الصورة لا تبدو كصورة نبات. يرجى التقاط صورة واضحة لنبات ليتمكن النظام من تحليله بشكل دقيق.".
+   - "diagnosis": "هذه الصور لا تبدو كصور لنبات. يرجى التقاط صورة واضحة لنبات ليتمكن النظام من تحليله بشكل دقيق.".
    - "care_instructions": "".
 
 2. إذا كان النبات مريضاً أو به إصابة، قم بتقديم:
-   - اسم النبات (بالعربية).
+   - اسم النبات (بالعربية الفصحى).
    - اسمه العلمي (بالإنجليزية).
-   - نوع الإصابة أو المرض (تشخيص دقيق).
-   - توصيات تفصيلية للعلاج والعناية الفورية.
+   - نوع الإصابة أو المرض (تشخيص دقيق للغاية يحدد المسبب سواء كان فطرياً، بكتيرياً، حشرياً، أو بيئياً كنقص المغذيات أو الإجهاد المائي).
+   - تشخيص مجهري شامل: اشرح بالتفصيل الممل كافة العلامات والأعراض التي تظهر في جميع الصور المرفقة (مثل شكل البقع على الأوراق، تلون العروق، شحوب اللون، نخر الأنسجة، وجود خيوط العنكبوت أو بيوض الحشرات، أو تلف السيقان).
+   - توصيات تفصيلية وعملية للعلاج والعناية الفورية مقسمة في نقاط واضحة.
 
 3. إذا كان النبات سليماً، قم بتقديم:
-   - اسم النبات (بالعربية).
+   - اسم النبات (بالعربية الفصحى).
    - اسمه العلمي (بالإنجليزية).
    - الحالة الصحية (سليم).
-   - نصائح للعناية العامة للحفاظ على صحته.
+   - شرح تفصيلي يؤكد سلامة النبات بناءً على فحص الصور (سلامة تمثيل ضوئي، تماثل النمو، خلو الأوراق من البقع أو الطفيليات).
+   - نصائح مخصصة للعناية العامة والوقاية للحفاظ على صحته وازدهاره.
+
+4. إذا كانت الصور المرفوعة تحتوي على نباتات مختلفة أو غير متطابقة (مثلاً: صورة لنبات طماطم وصورة أخرى لشجرة ليمون أو نخلة في نفس الطلب)، يجب أن يكون الرد كالتالي:
+   - "status": "نباتات مختلفة".
+   - "plant_name": "غير متطابق".
+   - "scientific_name": "N/A".
+   - "diagnosis": "تظهر الصور المرفوعة نباتات مختلفة أو غير متطابقة. يرجى رفع صور لنفس النبات فقط من زوايا أو أجزاء مختلفة ليتمكن النظام من تقديم تحليل دقيق ومتناسق.".
+   - "care_instructions": "".
 
 يرجى تقديم الإجابة بتنسيق JSON حصراً كالتالي (لا تضف أي نص خارج الـ JSON):
 {
@@ -57,40 +68,43 @@ const PROMPT = `أنت خبير في علم النبات والزراعة. قم 
   "scientific_name": "Scientific Name in English",
   "status": "سليم",
   "confidence": "95%",
-  "diagnosis": "وصف تفصيلي للحالة الصحية للنبات أو التشخيص الدقيق للمرض",
-  "care_instructions": "• التعليمة الأولى للعناية أو العلاج.\n• التعليمة الثانية.\n• التعليمة الثالثة.\n• التعليمة الرابعة."
+  "diagnosis": "وصف مجهري تحليلي تفصيلي للغاية للحالة الصحية للنبات وملاحظة كل صورة مرفقة بالتفصيل لمقارنة التفاصيل المجهرية والأعراض بدقة تامة وبدون أخطاء",
+  "care_instructions": "• التعليمة الأولى للعناية أو العلاج بدقة.\n• التعليمة الثانية.\n• التعليمة الثالثة.\n• التعليمة الرابعة."
 }
 
 ملاحظات مهمة:
-- قيمة "status" يجب أن تكون إما "سليم" أو "مصاب" أو "ليس نبات" فقط.
-- قيمة "confidence" هي نسبة ثقتك في التشخيص كنسبة مئوية مثل "92%".
+- ادرس كافة الصور المرفوعة وقارن بينها للوصول للتشخيص المثالي.
+- قيمة "status" يجب أن تكون إما "سليم" أو "مصاب" أو "ليس نبات" أو "نباتات مختلفة" فقط.
+- قيمة "confidence" هي نسبة ثقتك في التشخيص كنسبة مئوية مثل "97%".
 - قيمة "care_instructions" يجب أن تكون نصاً واحداً مستمراً تبدأ كل نقطة بـ "• ".
-- تأكد من أن جميع النصوص باللغة العربية الفصحى ومرتبة جداً.
-- لا تضف أي نص أو شرح خارج حدود الـ JSON.`;
+- تأكد من أن جميع النصوص باللغة العربية الفصحى الراقية والمنظمة جداً.
+- لا تضف أي نص أو شرح خارج حدود الـ JSON على الإطلاق لتجنب أخطاء التحليل.`;
 
-const callGeminiDirect = async (modelName, base64Data, mimeType) => {
+const callGeminiDirect = async (modelName, imageParts) => {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
   
+  const parts = [
+    { text: PROMPT },
+    ...imageParts.map(img => ({
+      inline_data: { mime_type: img.mimeType, data: img.base64Data }
+    }))
+  ];
+
   const response = await fetchWithTimeout(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      contents: [{
-        parts: [
-          { text: PROMPT },
-          { inline_data: { mime_type: mimeType, data: base64Data } }
-        ]
-      }],
+      contents: [{ parts }],
       generationConfig: {
-        temperature: 0.1,
-        maxOutputTokens: 1024,
+        temperature: 0.15,
+        maxOutputTokens: 2048,
         responseMimeType: "application/json",
       }
     })
   });
 
   if (!response.ok) {
-    const err = await response.json();
+    const err = await response.json().catch(() => ({}));
     throw new Error(err.error?.message || `Gemini API Error: ${response.status}`);
   }
 
@@ -98,7 +112,15 @@ const callGeminiDirect = async (modelName, base64Data, mimeType) => {
   return data.candidates?.[0]?.content?.parts?.[0]?.text;
 };
 
-const callOpenRouter = async (model, base64Image) => {
+const callOpenRouter = async (model, base64Images) => {
+  const contentParts = [
+    { type: "text", text: PROMPT }
+  ];
+
+  base64Images.forEach(img => {
+    contentParts.push({ type: "image_url", image_url: { url: img } });
+  });
+
   const response = await fetchWithTimeout("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -112,13 +134,10 @@ const callOpenRouter = async (model, base64Image) => {
       messages: [
         {
           role: "user",
-          content: [
-            { type: "text", text: PROMPT },
-            { type: "image_url", image_url: { url: base64Image } },
-          ],
+          content: contentParts,
         },
       ],
-      temperature: 0.1,
+      temperature: 0.15,
       response_format: { type: "json_object" },
     }),
   });
@@ -184,7 +203,7 @@ const compressImage = async (base64Image) => {
       canvas.height = height;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, width, height);
-      resolve(canvas.toDataURL('image/jpeg', 0.7)); // ضغط الصورة لتقليل الحجم
+      resolve(canvas.toDataURL('image/jpeg', 0.7));
     };
     img.onerror = () => reject(new Error("فشل تحميل الصورة أثناء الضغط"));
     img.src = base64Image;
@@ -209,13 +228,22 @@ export const useGemini = () => {
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
 
-  const analyzeImage = async (base64Image) => {
+  const analyzeImage = async (images) => {
     setLoading(true);
     setError(null);
     setResult(null);
 
-    if (!base64Image || !base64Image.startsWith('data:image')) {
-      setError("صيغة الصورة غير صحيحة. يرجى اختيار صورة من نوع JPG أو PNG.");
+    const imagesArray = Array.isArray(images) ? images : [images];
+    const validImages = imagesArray.filter(img => img && img.startsWith('data:image'));
+
+    if (validImages.length === 0) {
+      setError("يرجى اختيار صورة واحدة على الأقل صالحة من نوع JPG أو PNG للبدء بالتحليل.");
+      setLoading(false);
+      return;
+    }
+
+    if (validImages.length > 4) {
+      setError("يمكنك رفع بحد أقصى 4 صور فقط للتحليل.");
       setLoading(false);
       return;
     }
@@ -226,13 +254,21 @@ export const useGemini = () => {
       return;
     }
 
-    let finalImage = base64Image;
+    let compressedImages = [];
     try {
-      console.log("[Nabta AI] جاري ضغط الصورة...");
-      finalImage = await compressImage(base64Image);
-      console.log("[Nabta AI] تم ضغط الصورة بنجاح.");
+      console.log(`[Nabta AI] جاري ضغط عدد ${validImages.length} صور...`);
+      compressedImages = await Promise.all(
+        validImages.map(img => 
+          compressImage(img).catch(err => {
+            console.warn("[Nabta AI] فشل ضغط الصورة، سيتم استخدام الأصلية:", err.message);
+            return img;
+          })
+        )
+      );
+      console.log("[Nabta AI] تم ضغط الصور بنجاح.");
     } catch (e) {
-      console.warn("[Nabta AI] فشل ضغط الصورة، سيتم استخدام الأصلية:", e.message);
+      console.warn("[Nabta AI] فشل عملية ضغط الصور بالتوازي:", e.message);
+      compressedImages = validImages;
     }
 
     const processResult = (parsedResult, usedModel) => {
@@ -257,46 +293,49 @@ export const useGemini = () => {
 
     let lastError = null;
 
-    // 1. تجربة كل نماذج Gemini Direct المتاحة
     if (GEMINI_API_KEY) {
       for (const modelName of GEMINI_DIRECT_MODELS) {
         try {
           console.log(`[Nabta AI] جاري تجربة نموذج جوجل: ${modelName}`);
           
-          const parts = finalImage.split(";base64,");
-          if (parts.length < 2) continue;
+          const imageParts = [];
+          for (const img of compressedImages) {
+            const parts = img.split(";base64,");
+            if (parts.length < 2) continue;
+            const mimeType = parts[0].split(":")[1] || "image/jpeg";
+            const base64Data = parts[1];
+            imageParts.push({ mimeType, base64Data });
+          }
+
+          if (imageParts.length === 0) continue;
           
-          const mimeType = parts[0].split(":")[1] || "image/jpeg";
-          const base64Data = parts[1];
-          
-          const textResponse = await callGeminiDirect(modelName, base64Data, mimeType);
+          const textResponse = await callGeminiDirect(modelName, imageParts);
           if (textResponse) {
-            console.log(`[Nabta AI]  نجح التحليل باستخدام: ${modelName}`);
+            console.log(`[Nabta AI] نجح التحليل باستخدام: ${modelName}`);
             const parsedResult = extractJSON(textResponse);
             processResult(parsedResult, `Google (${modelName})`);
             return;
           }
         } catch (err) {
-          console.warn(`[Nabta AI]  فشل الموديل ${modelName}:`, err.message);
+          console.warn(`[Nabta AI] فشل الموديل ${modelName}:`, err.message);
           lastError = err;
         }
       }
     }
 
-    // 2. إذا فشل جوجل المباشر، ننتقل لـ OpenRouter
     if (OPENROUTER_API_KEY) {
       for (const model of OPENROUTER_MODELS) {
         try {
           console.log(`[Nabta AI] جاري تجربة OpenRouter: ${model}`);
-          const textResponse = await callOpenRouter(model, finalImage);
+          const textResponse = await callOpenRouter(model, compressedImages);
           if (textResponse) {
-            console.log(`[Nabta AI]  نجح التحليل عبر OpenRouter: ${model}`);
+            console.log(`[Nabta AI] نجح التحليل عبر OpenRouter: ${model}`);
             const parsedResult = extractJSON(textResponse);
             processResult(parsedResult, `OpenRouter (${model})`);
             return;
           }
         } catch (err) {
-          console.warn(`[Nabta AI]  فشل OpenRouter ${model}:`, err.message);
+          console.warn(`[Nabta AI] فشل OpenRouter ${model}:`, err.message);
           lastError = err;
         }
       }
