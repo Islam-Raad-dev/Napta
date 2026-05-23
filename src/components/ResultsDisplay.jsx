@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, Microscope, Sparkles, Activity, ShieldCheck, Zap, Leaf } from 'lucide-react';
 
-const ResultsDisplay = ({ result, error }) => {
+const ResultsDisplay = ({ result, error, analyzedImages }) => {
   if (error) {
     return (
       <motion.div 
@@ -71,7 +71,7 @@ const ResultsDisplay = ({ result, error }) => {
           <div className={`px-10 py-5 rounded-[2.5rem] flex items-center gap-5 shadow-precise-luxury border-2 transition-all duration-700 ${
             result.status === 'سليم' 
               ? 'bg-green-500/5 border-green-500/20 text-green-700 dark:text-green-400' 
-              : result.status === 'ليس نبات'
+              : result.status === 'ليس نبات' || result.status === 'نباتات مختلفة'
                 ? 'bg-amber-500/5 border-amber-500/20 text-amber-700 dark:text-amber-400'
                 : 'bg-red-500/5 border-red-500/20 text-red-700 dark:text-red-400'
           }`}>
@@ -92,6 +92,35 @@ const ResultsDisplay = ({ result, error }) => {
           )}
         </div>
       </motion.div>
+
+      {/* Examined Images Showcase */}
+      {analyzedImages && analyzedImages.length > 0 && (
+        <motion.div variants={itemVariants} className="max-w-6xl mx-auto px-4 md:px-0">
+          <div className="p-8 md:p-12 rounded-[3.5rem] bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-primary-dark/5 dark:border-white/5 shadow-precise-luxury text-right">
+            <div className="flex items-center justify-end gap-3 mb-8">
+              <span className="text-[10px] font-black font-outfit text-accent-mustard uppercase tracking-[0.4em]">اللقطات المخبرية</span>
+              <h2 className="text-xl md:text-2xl font-black font-cairo text-primary-dark dark:text-white">الصور المرفقة المفحوصة</h2>
+            </div>
+            
+            <div className={`grid gap-4 md:gap-6 ${
+              analyzedImages.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 
+              analyzedImages.length === 2 ? 'grid-cols-2 max-w-4xl mx-auto' : 
+              analyzedImages.length === 3 ? 'grid-cols-3' : 
+              'grid-cols-2 md:grid-cols-4'
+            }`}>
+              {analyzedImages.map((img, idx) => (
+                <div key={idx} className="relative rounded-[2rem] overflow-hidden aspect-[4/3] border border-primary-dark/10 dark:border-white/10 shadow-sm group">
+                  <img src={img} alt={`تفاصيل الصورة ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-white font-cairo text-[10px] font-bold flex items-center gap-1.5 border border-white/5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent-mustard" />
+                    <span>اللقطة {idx + 1}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* 2. Primary Diagnostic Card */}
       <motion.div variants={itemVariants} className="max-w-6xl mx-auto px-4 md:px-0">
@@ -118,7 +147,7 @@ const ResultsDisplay = ({ result, error }) => {
       </motion.div>
 
       {/* 3. Care Plan: Tactical Steps - Only show if it's a plant */}
-      {result.status !== 'ليس نبات' && (
+      {result.status !== 'ليس نبات' && result.status !== 'نباتات مختلفة' && (
         <motion.div variants={itemVariants} className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-12 px-4 md:px-0">
           <div className="lg:col-span-7 space-y-10 text-right">
             <div className="flex items-center justify-end gap-6 mb-4">
