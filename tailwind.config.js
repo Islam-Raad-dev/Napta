@@ -36,7 +36,26 @@ export default {
       boxShadow: {
         'luxury': '0 4px 12px rgba(26, 48, 33, 0.05), 0 1px 3px rgba(26, 48, 33, 0.02)',
         'precise-luxury': '0 2px 8px rgba(26, 48, 33, 0.04), 0 0 0 1px rgba(26, 48, 33, 0.03)',
-      }
+      },
+      keyframes: {
+        'scan-beam': {
+          '0%': { top: '5%', opacity: '0.6' },
+          '50%': { top: '90%', opacity: '1' },
+          '100%': { top: '5%', opacity: '0.6' },
+        },
+        'spin-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+      },
+      animation: {
+        'scan-beam': 'scan-beam 2.5s ease-in-out infinite',
+        'spin-slow': 'spin-slow 4s linear infinite',
+      },
+      scale: {
+        '102': '1.02',
+        '98': '0.98',
+      },
     },
   },
   plugins: [],
