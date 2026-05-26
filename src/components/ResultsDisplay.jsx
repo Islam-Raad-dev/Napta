@@ -251,7 +251,7 @@ const ResultsDisplay = ({ result, error, analyzedImages }) => {
             <div className="p-4 md:p-6 rounded-2xl bg-white/50 dark:bg-black/25 backdrop-blur-md border border-primary-dark/5 dark:border-white/5 shadow-sm text-right">
               <div className="flex items-center justify-start gap-2 mb-4 border-b border-primary-dark/5 dark:border-white/5 pb-3">
                 <Leaf className="w-4 h-4 text-accent-mustard" />
-                <h2 className="text-sm md:text-base font-bold font-cairo text-primary-dark dark:text-white">اللقطات المفحوصة مخبرياً</h2>
+                <h2 className="text-sm md:text-base font-bold font-cairo text-primary-dark dark:text-white">اللقطات المفحوصة </h2>
               </div>
 
               <div className={`grid gap-3 ${
@@ -279,7 +279,7 @@ const ResultsDisplay = ({ result, error, analyzedImages }) => {
           <div className="p-5 md:p-6 rounded-2xl bg-white/60 dark:bg-[#121212]/40 backdrop-blur-md border border-primary-dark/5 dark:border-white/10 shadow-sm text-right space-y-3 print-card">
             <div className="flex items-center justify-start gap-2 border-b border-primary-dark/5 dark:border-white/5 pb-2.5 print:pb-1">
               <Microscope className="w-4 h-4 text-accent-mustard print:hidden" />
-              <h3 className="text-sm sm:text-base font-bold font-cairo text-primary-dark dark:text-white">نتائج الفحص والتشخيص المجهري</h3>
+              <h3 className="text-sm sm:text-base font-bold font-cairo text-primary-dark dark:text-white">نتائج الفحص والتشخيص </h3>
             </div>
             <p className="text-xs sm:text-sm md:text-base text-primary-dark/95 dark:text-white/95 print:text-white/95 font-cairo leading-relaxed font-semibold break-words">
               {result.diagnosis}
