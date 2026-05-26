@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import { Leaf } from 'lucide-react';
 
 const Hero = ({ onStart, onDemoClick }) => {
   const mouseX = useMotionValue(typeof window !== "undefined" ? window.innerWidth / 2 : 500);
@@ -58,53 +57,51 @@ const Hero = ({ onStart, onDemoClick }) => {
   const shouldAnimate = !isTouch && !prefersReducedMotion;
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-32 pb-32 md:pb-40 overflow-hidden" aria-label="القسم الرئيسي">
-      
-
-
-      <div className="container mx-auto px-6 md:px-16 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24 z-10 pointer-events-none">
+    <section dir="rtl" className="relative w-full min-h-[85vh] flex flex-col items-center justify-center pt-24 pb-20 md:pb-28 overflow-hidden font-cairo">
+      <div className="container mx-auto px-6 md:px-16 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16 z-10 pointer-events-none">
         
-        {/* Text Content: Premium Mathematical Drama */}
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="flex-1 w-full text-right pointer-events-auto mt-8 md:mt-24 relative z-20"
+          className="flex-1 w-full text-right pointer-events-auto mt-4 md:mt-12 relative z-20"
         >
-          <motion.div variants={itemVariants}>
-            <span className="inline-block px-4 py-1.5 mb-8 rounded-full border border-primary-dark/10 dark:border-white/10 bg-white/20 dark:bg-white/[0.03] text-primary-dark dark:text-white text-xs md:text-sm font-black font-outfit tracking-[0.3em] uppercase">
-                ذكاء بيئي مستدام
+          <motion.div variants={itemVariants} className="mb-8">
+            <span className="inline-block px-4 py-1.5 rounded-full border border-primary-dark/10 dark:border-white/10 bg-white/20 dark:bg-white/[0.03] text-primary-dark dark:text-white text-sm font-black">
+              ذكاء بيئي مستدام
             </span>
           </motion.div>
           
-          <motion.h2 variants={itemVariants} className="font-cairo tracking-tight mb-10 text-right flex flex-col items-start lg:items-end group">
-            <span className="text-4xl md:text-6xl lg:text-8xl font-black text-primary-dark dark:text-white leading-[1.3]">
-              <span className="text-accent-mustard ml-2">طبيب</span> نباتك
+          <motion.h2 variants={itemVariants} className="tracking-normal mb-10">
+            <span className="block text-4xl sm:text-5xl lg:text-7xl font-black text-primary-dark dark:text-white leading-[1.3] mb-6">
+              <span className="inline-block text-accent-mustard ml-4">طبيب</span>
+              <span className="inline-block">نباتك</span>
             </span>
-            <span className="text-4xl md:text-6xl lg:text-8xl font-black text-primary-dark dark:text-white italic mt-2 md:mt-4 opacity-90 leading-tight">الشخصي</span>
+            <span className="block text-4xl sm:text-5xl lg:text-7xl font-black text-primary-dark dark:text-white italic opacity-90 leading-[1.3]">
+              الشخصي
+            </span>
           </motion.h2>
           
-          <motion.p variants={itemVariants} className="text-lg sm:text-xl md:text-2xl text-primary-dark/60 dark:text-white/60 font-cairo max-w-[42ch] ms-auto leading-[1.8] mb-12 font-medium">
+          <motion.p variants={itemVariants} className="text-base sm:text-lg md:text-xl text-primary-dark/70 dark:text-white/70 max-w-[45ch] leading-relaxed mb-10 font-semibold">
             نحوّل المرض الصامت إلى لغة مفهومة، لنمنح نباتك الرعاية التي تستحقها بدقة الذكاء الاصطناعي.
           </motion.p>
           
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-start gap-6">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-start justify-start gap-4">
             <button 
               onClick={onStart}
-              className="w-full sm:w-auto px-12 py-5 bg-accent-mustard text-primary-dark font-cairo font-black text-xl hover:scale-105 active:scale-[0.97] transition-all duration-500 shadow-precise-luxury rounded-2xl"
+              className="w-full sm:w-auto px-8 py-3.5 bg-accent-mustard text-primary-dark font-bold text-base sm:text-lg hover:scale-105 active:scale-95 transition-all duration-300 shadow-md rounded-xl"
             >
-              ابدأ الفحص
+              ابدأ الفحص المباشر
             </button>
             <button 
               onClick={onDemoClick}
-              className="w-full sm:w-auto px-12 py-5 bg-transparent text-primary-dark dark:text-white font-cairo font-bold text-xl border border-primary-dark/20 dark:border-white/20 hover:border-accent-mustard hover:text-accent-mustard active:scale-[0.97] transition-all duration-500 rounded-2xl"
+              className="w-full sm:w-auto px-8 py-3.5 bg-transparent text-primary-dark dark:text-white font-bold text-base sm:text-lg border-2 border-primary-dark/20 dark:border-white/20 hover:border-accent-mustard hover:text-accent-mustard active:scale-95 transition-all duration-300 rounded-xl"
             >
-              شاهد عينة للتحليل 
+              شاهد عينة للتحليل
             </button>
           </motion.div>
         </motion.div>
 
-        {/* Visual Content: Architectural Scale */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}

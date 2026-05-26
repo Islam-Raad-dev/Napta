@@ -56,9 +56,9 @@ function App() {
     }
   };
 
-  const handleAnalyze = async (images) => {
+  const handleAnalyze = async (images, additionalDetails) => {
     setAnalyzedImages(images);
-    await analyzeImage(images);
+    await analyzeImage(images, additionalDetails);
 
     setTimeout(() => {
       const resultsSection = document.getElementById('results');

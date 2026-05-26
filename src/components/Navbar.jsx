@@ -19,25 +19,25 @@ const Navbar = ({ onStart, isDarkMode, toggleDarkMode, currentPage, setCurrentPa
 
   return (
     <>
-      <nav style={{ direction: 'rtl' }} className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-16 py-5 md:py-8 transition-colors duration-500 bg-primary-light dark:bg-dark-base border-b border-primary-dark/5 dark:border-white/5" role="navigation" aria-label="التنقل الرئيسي">
+      <nav style={{ direction: 'rtl' }} className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-16 py-3.5 md:py-4.5 transition-colors duration-500 bg-primary-light/95 dark:bg-dark-base/95 backdrop-blur-md border-b border-primary-dark/5 dark:border-white/5" role="navigation" aria-label="التنقل الرئيسي">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="flex items-center gap-2 md:gap-6"
+          className="flex items-center gap-2 md:gap-4"
         >
           <button 
             onClick={toggleDarkMode}
-            className="p-3 w-12 h-12 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-primary-dark dark:text-white transition-colors focus-visible:ring-2 focus-visible:ring-accent-mustard"
+            className="p-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-primary-dark dark:text-white transition-colors focus-visible:ring-2 focus-visible:ring-accent-mustard"
             aria-label={isDarkMode ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الداكن'}
           >
-            {isDarkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
 
           {/* Desktop CTA */}
           <button 
             onClick={onStart}
-            className="hidden md:block px-8 py-3.5 bg-primary-dark dark:bg-white text-white dark:text-primary-dark hover:bg-accent-mustard dark:hover:bg-accent-mustard hover:text-primary-dark dark:hover:text-primary-dark rounded-full font-cairo text-base font-black transition-all duration-300 shadow-precise-luxury focus-visible:ring-2 focus-visible:ring-accent-mustard focus-visible:ring-offset-2"
+            className="hidden md:block px-6 py-2.5 bg-primary-dark dark:bg-white text-white dark:text-primary-dark hover:bg-accent-mustard dark:hover:bg-accent-mustard hover:text-primary-dark dark:hover:text-primary-dark rounded-full font-cairo text-sm font-extrabold transition-all duration-300 shadow-precise-luxury focus-visible:ring-2 focus-visible:ring-accent-mustard focus-visible:ring-offset-2"
           >
             ابدأ الآن
           </button>
@@ -45,29 +45,29 @@ const Navbar = ({ onStart, isDarkMode, toggleDarkMode, currentPage, setCurrentPa
           {/* Mobile Menu Toggle Button */}
           <button 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-3 w-12 h-12 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-primary-dark dark:text-white transition-colors z-[60] focus-visible:ring-2 focus-visible:ring-accent-mustard"
+            className="md:hidden p-2 w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-primary-dark dark:text-white transition-colors z-[60] focus-visible:ring-2 focus-visible:ring-accent-mustard"
             aria-label={isMobileMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
             aria-expanded={isMobileMenuOpen}
           >
-            {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </motion.div>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-10 font-cairo text-base font-bold text-primary-dark/60 dark:text-white/60">
+        <div className="hidden md:flex items-center gap-8 font-cairo text-sm font-bold text-primary-dark/60 dark:text-white/60">
           {navLinks.map((link) => (
             <button 
               key={link.id}
               onClick={() => handleNavClick(link.id)} 
               aria-current={currentPage === link.id ? 'page' : undefined}
-              className={`${currentPage === link.id ? 'text-primary-dark dark:text-white' : 'hover:text-primary-dark dark:hover:text-white'} transition-colors relative group py-2 bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-accent-mustard focus-visible:ring-offset-2 rounded-lg`}
+              className={`${currentPage === link.id ? 'text-primary-dark dark:text-white font-extrabold' : 'hover:text-primary-dark dark:hover:text-white'} transition-colors relative group py-1.5 bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-accent-mustard focus-visible:ring-offset-2 rounded-lg`}
             >
               <span className="relative z-10">{link.label}</span>
               {currentPage === link.id && (
                 <motion.span 
                   layoutId="activeTab"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  className="absolute bottom-0 left-0 w-full h-1 bg-accent-mustard rounded-full" 
+                  className="absolute bottom-0 left-0 w-full h-0.5 bg-accent-mustard rounded-full" 
                 />
               )}
             </button>
@@ -79,15 +79,15 @@ const Navbar = ({ onStart, isDarkMode, toggleDarkMode, currentPage, setCurrentPa
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           onClick={() => handleNavClick('home')}
-          className="flex items-center gap-3 md:gap-4 bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-accent-mustard rounded-xl p-1"
+          className="flex items-center gap-2.5 md:gap-3 bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-accent-mustard rounded-xl p-1"
           aria-label="العودة للرئيسية"
         >
-          <h1 className="text-xl md:text-3xl font-black tracking-tight text-primary-dark dark:text-white font-cairo">
+          <h1 className="text-lg md:text-2xl font-black tracking-tight text-primary-dark dark:text-white font-cairo">
             نبتة <span className="text-accent-mustard">الذكية</span>
           </h1>
-          <div className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-primary-dark dark:bg-white text-white dark:text-primary-dark shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-            <Leaf className="w-6 h-6 md:w-7 md:h-7" />
-            <Cpu className="absolute -bottom-1 -left-1 md:-bottom-1.5 md:-left-1.5 text-accent-mustard w-4 h-4 md:w-5 md:h-5 bg-primary-dark dark:bg-white rounded-full p-0.5 border-[1.5px] md:border-2 border-primary-light dark:border-dark-base" />
+          <div className="relative flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-xl bg-primary-dark dark:bg-white text-white dark:text-primary-dark shadow-[0_4px_15px_rgb(0,0,0,0.08)]">
+            <Leaf className="w-5 h-5 md:w-6 md:h-6" />
+            <Cpu className="absolute -bottom-0.5 -left-0.5 md:-bottom-1 md:-left-1 text-accent-mustard w-3 h-3 md:w-4 md:h-4 bg-primary-dark dark:bg-white rounded-full p-0.5 border-[1.5px] border-primary-light dark:border-dark-base" />
           </div>
         </motion.button>
       </nav>

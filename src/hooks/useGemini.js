@@ -30,7 +30,7 @@ const GEMINI_DIRECT_MODELS = [
   "gemini-1.5-flash-8b-latest"
 ];
 
-const PROMPT = `أنت خبير متميز وعالم نبات زراعي دقيق للغاية. قد يتم تزويدك بصورة واحدة أو عدة صور (حتى 4 صور) لنفس النبات من زوايا ومسافات مختلفة (لقطات عامة، أوراق مقربة، سيقان، ثمار، أو جذور). 
+const PROMPT = `أنت خبير متميز وعالم نبات زراعي عراقي ومتخصص في السوق العراقي دقيق للغاية. قد يتم تزويدك بصورة واحدة أو عدة صور (حتى 4 صور) لنفس النبات من زوايا ومسافات مختلفة (لقطات عامة، أوراق مقربة، سيقان، ثمار، أو جذور). 
 
 مهمتك هي تحليل كافة الصور المرفقة بدقة فائقة ومجهرية، وتقديم فحص طبي زراعي متكامل خالٍ من الأخطاء:
 
@@ -80,11 +80,16 @@ const PROMPT = `أنت خبير متميز وعالم نبات زراعي دقي
 - تأكد من أن جميع النصوص باللغة العربية الفصحى الراقية والمنظمة جداً.
 - لا تضف أي نص أو شرح خارج حدود الـ JSON على الإطلاق لتجنب أخطاء التحليل.`;
 
-const callGeminiDirect = async (modelName, imageParts) => {
+const callGeminiDirect = async (modelName, imageParts, additionalDetails = "") => {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
-  
+
+  let fullPrompt = PROMPT;
+  if (additionalDetails && additionalDetails.trim()) {
+    fullPrompt += `\n\nتنبيه هام وملاحظات إضافية من المزارع/المستخدم حول النبات:\n"""\n${additionalDetails.trim()}\n"""\nيرجى استخدام هذه التفاصيل والظروف المذكورة (مثل الأعراض الإضافية، السقي، نوع التربة، البيئة، إلخ) لتعزيز دقة التشخيص والتحليل وربطها بما تراه في الصور.`;
+  }
+
   const parts = [
-    { text: PROMPT },
+    { text: fullPrompt },
     ...imageParts.map(img => ({
       inline_data: { mime_type: img.mimeType, data: img.base64Data }
     }))
@@ -112,9 +117,14 @@ const callGeminiDirect = async (modelName, imageParts) => {
   return data.candidates?.[0]?.content?.parts?.[0]?.text;
 };
 
-const callOpenRouter = async (model, base64Images) => {
+const callOpenRouter = async (model, base64Images, additionalDetails = "") => {
+  let fullPrompt = PROMPT;
+  if (additionalDetails && additionalDetails.trim()) {
+    fullPrompt += `\n\nتنبيه هام وملاحظات إضافية من المزارع/المستخدم حول النبات:\n"""\n${additionalDetails.trim()}\n"""\nيرجى استخدام هذه التفاصيل والظروف المذكورة (مثل الأعراض الإضافية، السقي، نوع التربة، البيئة، إلخ) لتعزيز دقة التشخيص والتحليل وربطها بما تراه في الصور.`;
+  }
+
   const contentParts = [
-    { type: "text", text: PROMPT }
+    { type: "text", text: fullPrompt }
   ];
 
   base64Images.forEach(img => {
@@ -158,7 +168,7 @@ const extractJSON = (text) => {
       const match = cleanJson.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
       if (match) cleanJson = match[1];
     }
-    
+
     const start = cleanJson.indexOf('{');
     const end = cleanJson.lastIndexOf('}');
     if (start !== -1 && end !== -1) {
@@ -228,7 +238,7 @@ export const useGemini = () => {
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
 
-  const analyzeImage = async (images) => {
+  const analyzeImage = async (images, additionalDetails = "") => {
     setLoading(true);
     setError(null);
     setResult(null);
@@ -258,7 +268,7 @@ export const useGemini = () => {
     try {
       console.log(`[Nabta AI] جاري ضغط عدد ${validImages.length} صور...`);
       compressedImages = await Promise.all(
-        validImages.map(img => 
+        validImages.map(img =>
           compressImage(img).catch(err => {
             console.warn("[Nabta AI] فشل ضغط الصورة، سيتم استخدام الأصلية:", err.message);
             return img;
@@ -297,7 +307,7 @@ export const useGemini = () => {
       for (const modelName of GEMINI_DIRECT_MODELS) {
         try {
           console.log(`[Nabta AI] جاري تجربة نموذج جوجل: ${modelName}`);
-          
+
           const imageParts = [];
           for (const img of compressedImages) {
             const parts = img.split(";base64,");
@@ -308,8 +318,8 @@ export const useGemini = () => {
           }
 
           if (imageParts.length === 0) continue;
-          
-          const textResponse = await callGeminiDirect(modelName, imageParts);
+
+          const textResponse = await callGeminiDirect(modelName, imageParts, additionalDetails);
           if (textResponse) {
             console.log(`[Nabta AI] نجح التحليل باستخدام: ${modelName}`);
             const parsedResult = extractJSON(textResponse);
@@ -327,7 +337,7 @@ export const useGemini = () => {
       for (const model of OPENROUTER_MODELS) {
         try {
           console.log(`[Nabta AI] جاري تجربة OpenRouter: ${model}`);
-          const textResponse = await callOpenRouter(model, compressedImages);
+          const textResponse = await callOpenRouter(model, compressedImages, additionalDetails);
           if (textResponse) {
             console.log(`[Nabta AI] نجح التحليل عبر OpenRouter: ${model}`);
             const parsedResult = extractJSON(textResponse);
@@ -342,7 +352,7 @@ export const useGemini = () => {
     }
 
     console.error("[Nabta AI] فشلت جميع المحاولات:", lastError);
-    
+
     const userFriendlyError = lastError?.message?.includes("endpoints") || lastError?.message?.includes("key")
       ? "عذراً، الخوادم مشغولة حالياً أو غير متاحة. يرجى المحاولة بعد قليل."
       : "عذراً، تعذّر التحليل. يرجى التأكد من أن الصورة واضحة أو المحاولة لاحقاً.";

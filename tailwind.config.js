@@ -28,10 +28,10 @@ export default {
         outfit: ['Outfit', 'sans-serif'],
       },
       fontSize: {
-        'fluid-h1': 'clamp(3.5rem, 8vw, 9.5rem)',
-        'fluid-h2': 'clamp(2.5rem, 6vw, 6.5rem)',
-        'fluid-h3': 'clamp(2rem, 4vw, 4rem)',
-        'fluid-h4': 'clamp(1.5rem, 3vw, 2.5rem)',
+        'fluid-h1': 'clamp(2.25rem, 5vw, 4rem)',
+        'fluid-h2': 'clamp(1.75rem, 4vw, 3rem)',
+        'fluid-h3': 'clamp(1.5rem, 3vw, 2.25rem)',
+        'fluid-h4': 'clamp(1.25rem, 2.5vw, 1.75rem)',
       },
       boxShadow: {
         'luxury': '0 4px 12px rgba(26, 48, 33, 0.05), 0 1px 3px rgba(26, 48, 33, 0.02)',

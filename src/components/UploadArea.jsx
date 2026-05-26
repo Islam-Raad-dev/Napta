@@ -1,12 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, ArrowLeft, ShieldCheck, Camera } from 'lucide-react';
+import { Upload, X, ArrowLeft, ShieldCheck, Camera, FileText } from 'lucide-react';
 import CameraCapture from './CameraCapture';
 
 const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
   const [previews, setPreviews] = useState([]);
   const [showCamera, setShowCamera] = useState(false);
   const [warning, setWarning] = useState('');
+  const [additionalDetails, setAdditionalDetails] = useState('');
   const fileInputRef = useRef(null);
 
   const addImages = (files) => {
@@ -56,6 +57,7 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
   const clearAllImages = () => {
     setPreviews([]);
     setWarning('');
+    setAdditionalDetails('');
   };
 
   const editorialSteps = [
@@ -65,7 +67,7 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
   ];
 
   return (
-    <section ref={ref} className="w-full py-20 relative overflow-hidden" aria-label="منطقة رفع الصور">
+    <section ref={ref} className="w-full py-8 md:py-14 relative overflow-hidden" aria-label="منطقة رفع الصور">
       <AnimatePresence>
         {showCamera && (
           <CameraCapture 
@@ -83,17 +85,17 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
         )}
       </AnimatePresence>
 
-      <div className="container mx-auto px-8 max-w-5xl relative z-10">
+      <div className="container mx-auto px-4 sm:px-8 max-w-5xl relative z-10">
         
-        <div className="mb-20 text-center">
+        <div className="mb-10 text-center">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-4xl md:text-6xl lg:text-8xl font-black font-cairo text-primary-dark dark:text-white leading-tight tracking-tight"
+            className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black font-cairo text-primary-dark dark:text-white leading-tight tracking-tight"
           >
-            حول جهازك الى <span className="text-accent-mustard italic">طبيب</span> زراعي ذكي.
+            حول جهازك إلى <span className="text-accent-mustard italic">طبيب</span> زراعي ذكي.
           </motion.h2>
         </div>
 
@@ -126,10 +128,10 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
                   </div>
                   
                   <div className="space-y-2">
-                    <h2 className="text-2xl md:text-3xl font-black text-primary-dark dark:text-white font-cairo">
+                    <h2 className="text-xl md:text-2xl font-black text-primary-dark dark:text-white font-cairo">
                       أرفع حتى 4 صور <span className="text-accent-mustard italic">هنا</span>
                     </h2>
-                    <p className="text-xs md:text-sm font-outfit text-primary-dark/30 dark:text-white/30 font-black uppercase tracking-[0.25em]">
+                    <p className="text-[10px] md:text-xs font-outfit text-primary-dark/30 dark:text-white/30 font-black uppercase tracking-[0.25em]">
                       نظام تشخيص متعدد اللقطات متطور
                     </p>
                   </div>
@@ -226,6 +228,37 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
                     </div>
                   </AnimatePresence>
 
+                  {/* حقل تفاصيل إضافية للمساعدة في دقة التشخيص */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-6 w-full text-right space-y-2.5"
+                  >
+                    <label 
+                      htmlFor="plant-details" 
+                      className="flex items-center justify-start gap-2 text-sm font-bold text-primary-dark/80 dark:text-white/80 font-cairo"
+                    >
+                      <FileText className="w-4 h-4 text-accent-mustard" />
+                      <span>ملحوظات أو أعراض إضافية عن النبات (اختياري)</span>
+                    </label>
+                    
+                    <div className="relative group/input">
+                      <textarea
+                        id="plant-details"
+                        rows="3"
+                        maxLength="400"
+                        value={additionalDetails}
+                        onChange={(e) => setAdditionalDetails(e.target.value)}
+                        placeholder="أدخل أي ملاحظات تساعد في زيادة دقة التحليل... (مثال: نرويها مرتين بالأسبوع، تنمو في تربة بيتموس، بدأت الأوراق تصفر منذ ٤ أيام)"
+                        className="w-full p-4 pr-5 rounded-2xl bg-white/60 dark:bg-white/[0.02] border border-primary-dark/10 dark:border-white/10 focus:border-accent-mustard/60 dark:focus:border-accent-mustard/60 focus:bg-white dark:focus:bg-dark-base outline-none resize-none transition-all duration-300 text-sm font-cairo leading-relaxed text-primary-dark dark:text-white placeholder:text-primary-dark/30 dark:placeholder:text-white/30"
+                      />
+                      <div className="absolute bottom-3 left-4 text-[10px] font-bold text-primary-dark/30 dark:text-white/30 font-outfit">
+                        {additionalDetails.length} / 400
+                      </div>
+                    </div>
+                  </motion.div>
+
                   {/* Dynamic Alert Warning in UI */}
                   {warning && (
                     <motion.div 
@@ -238,39 +271,39 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
                   )}
                   
                   <motion.div 
-                    initial={{ y: 15, opacity: 0 }}
+                    initial={{ y: 10, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="mt-6 w-full flex flex-col md:flex-row items-center justify-between gap-6 p-6 md:p-8 rounded-[2rem] bg-primary-dark/95 dark:bg-dark-surface/90 backdrop-blur-xl border border-white/10 shadow-precise-luxury"
+                    className="mt-4 w-full flex flex-col md:flex-row items-center justify-between gap-4 p-4 md:p-6 rounded-2xl bg-primary-dark/95 dark:bg-dark-surface/90 backdrop-blur-xl border border-white/10 shadow-precise-luxury"
                   >
                     <div className="text-right flex-1 flex flex-col gap-1">
-                      <div className="flex items-center justify-end gap-3 flex-wrap">
-                        <span className="px-2.5 py-1 rounded-full bg-accent-mustard/20 text-accent-mustard text-xs font-black font-cairo" dir="rtl">
+                      <div className="flex items-center justify-start gap-2 flex-wrap">
+                        <h3 className="text-lg md:text-xl font-extrabold text-white font-cairo">جاهز للتحليل</h3>
+                        <span className="px-2 py-0.5 rounded-full bg-accent-mustard/20 text-accent-mustard text-[10px] font-black font-cairo" dir="rtl">
                           {previews.length} من أصل 4 صور مضافة
                         </span>
-                        <h3 className="text-xl md:text-2xl font-black text-white font-cairo">جاهز للتحليل</h3>
                       </div>
-                      <p className="text-sm text-white/50 font-cairo font-medium">الذكاء الاصطناعي سيقوم بمقارنة ودراسة الصور كافة لأعلى دقة تشخيصية</p>
+                      <p className="text-xs text-white/50 font-cairo font-semibold">الذكاء الاصطناعي سيقوم بمقارنة ودراسة الصور كافة لأعلى دقة تشخيصية</p>
                     </div>
                     
-                    <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <div className="flex flex-col-reverse sm:flex-row items-center gap-2.5 w-full md:w-auto justify-center md:justify-end">
                       <button 
                         onClick={clearAllImages}
                         disabled={loading}
-                        className="px-5 py-3.5 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-bold font-cairo text-sm rounded-xl transition-all border border-white/10 active:scale-95 disabled:opacity-50"
+                        className="w-full sm:w-auto px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-bold font-cairo text-xs rounded-lg transition-all border border-white/10 active:scale-95 disabled:opacity-50 text-center flex justify-center items-center"
                       >
                         مسح الكل
                       </button>
                       <button 
-                        onClick={() => onAnalyze(previews)}
+                        onClick={() => onAnalyze(previews, additionalDetails)}
                         disabled={loading}
-                        className="group flex items-center justify-center gap-3 px-8 py-3.5 bg-accent-mustard text-primary-dark font-black font-cairo text-lg rounded-xl hover:scale-102 active:scale-98 transition-all shadow-lg disabled:opacity-50"
+                        className="w-full sm:w-auto group flex items-center justify-center gap-2 px-6 py-2.5 bg-accent-mustard text-primary-dark font-black font-cairo text-sm rounded-lg hover:scale-102 active:scale-98 transition-all shadow-lg disabled:opacity-50"
                       >
                         {loading ? (
-                          <div className="w-5 h-5 border-3 border-primary-dark/30 border-t-primary-dark rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-primary-dark/30 border-t-primary-dark rounded-full animate-spin" />
                         ) : (
                           <>
                             <span>ابدأ تشخيص العينات</span>
-                            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                           </>
                         )}
                       </button>
@@ -283,25 +316,25 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
             <motion.div 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              className="mt-8 flex items-center justify-center gap-3 text-primary-dark/30 dark:text-white/30 font-black font-outfit uppercase tracking-[0.3em] text-xs md:text-sm"
+              className="mt-6 flex items-center justify-center gap-3 text-primary-dark/30 dark:text-white/30 font-black font-outfit uppercase tracking-[0.2em] text-[10px] md:text-xs"
             >
               <div className="h-px w-12 bg-primary-dark/10 dark:bg-white/10" />
               <span> تحليل ذكي متعدد اللقطات متكامل </span>
-              <ShieldCheck className="w-5 h-5 text-accent-mustard" />
+              <ShieldCheck className="w-4 h-4 text-accent-mustard" />
               <div className="h-px w-12 bg-primary-dark/10 dark:bg-white/10" />
             </motion.div>
           </motion.div>
-
-          <div className="lg:col-span-4 space-y-14 py-10 border-e-2 border-primary-dark/5 dark:border-white/5 pe-10">
+ 
+          <div className="lg:col-span-4 space-y-6 lg:space-y-10 py-6 lg:py-10 border-t-2 lg:border-t-0 lg:border-e-2 border-primary-dark/5 dark:border-white/5 pt-10 lg:pt-0 lg:pe-10 pe-0">
             {editorialSteps.map((step, i) => (
-              <div key={i} className="text-right space-y-3 relative group">
-                <span className="text-6xl md:text-8xl font-black font-outfit text-accent-mustard opacity-10 absolute -top-8 -left-4 group-hover:opacity-20 transition-opacity">
+              <div key={i} className="text-right space-y-2 relative group">
+                <span className="text-4xl md:text-6xl font-black font-outfit text-accent-mustard opacity-10 absolute -top-5 -left-3 group-hover:opacity-20 transition-opacity">
                   {step.num}
                 </span>
-                <h4 className="text-2xl md:text-3xl font-black font-cairo text-primary-dark dark:text-white leading-tight relative z-10">
+                <h4 className="text-lg sm:text-xl md:text-2xl font-black font-cairo text-primary-dark dark:text-white leading-tight relative z-10">
                   {step.text}
                 </h4>
-                <div className="w-8 h-1 bg-accent-mustard/30 group-hover:w-16 transition-all" />
+                <div className="w-6 h-0.5 bg-accent-mustard/30 group-hover:w-12 transition-all" />
               </div>
             ))}
           </div>
