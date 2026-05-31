@@ -1,7 +1,138 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, X, ArrowLeft, ShieldCheck, Camera, FileText } from 'lucide-react';
 import CameraCapture from './CameraCapture';
+
+const LoadingStateTimerAndCarousel = () => {
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+
+  const quotes = [
+    "الاعتناء بالنباتات هو اعتناء بالمستقبل ونبض الحياة.",
+    "النباتات لا تتحدث، ولكنها تعبر عن امتنانها بجمال أوراقها وازدهارها.",
+    "التربة الصحية والنبات السليم هما أساس الحياة المستدامة.",
+    "كل ورقة خضراء تحميها اليوم هي نسمة هواء نقي تتنفسها غداً.",
+    "النباتات بحاجة إلى الصبر والحب، تماماً كأي كائن حي ينمو.",
+    "رعاية النباتات تعلمك التناغم مع الطبيعة وتقدير تفاصيلها الدقيقة.",
+    "النبات السليم هو درع الطبيعة ومصدر الغذاء والجمال.",
+    "استمع لنباتاتك؛ فتغير ألوان أوراقها هو لغة صامتة تطلب المساعدة.",
+    "حديقتك المنزلية هي واحتك الخاصة ومصدر راحتك النفسية اليومية.",
+    "الزراعة ليست مجرد هواية، بل هي عهد لرعاية الحياة على الأرض."
+  ];
+
+  useEffect(() => {
+    const startTime = Date.now();
+    const timerInterval = setInterval(() => {
+      setElapsedTime((Date.now() - startTime) / 1000);
+    }, 100);
+
+    const quoteInterval = setInterval(() => {
+      setCurrentQuoteIndex(prev => (prev + 1) % quotes.length);
+    }, 5000);
+
+    return () => {
+      clearInterval(timerInterval);
+      clearInterval(quoteInterval);
+    };
+  }, []);
+
+  const formatTime = (time) => {
+    return time.toFixed(1) + 's';
+  };
+
+  // SVG dasharray: radius is 58, 2 * Math.PI * 58 ≈ 364.4
+  // We can let the circle outline complete over 20s
+  const progressPercent = Math.min((elapsedTime / 20) * 100, 100);
+  const strokeDashoffset = 364.4 - (364.4 * progressPercent) / 100;
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="flex flex-col items-center justify-center p-6 md:p-8 rounded-[2rem] bg-white/40 dark:bg-white/[0.02] border border-primary-dark/10 dark:border-white/10 backdrop-blur-xl shadow-precise-luxury text-center space-y-8 w-full"
+    >
+      {/* Visual Timer */}
+      <div className="relative w-36 h-36 flex items-center justify-center">
+        {/* Outer glowing track */}
+        <svg className="w-full h-full transform -rotate-90">
+          <circle
+            cx="72"
+            cy="72"
+            r="58"
+            className="stroke-primary-dark/5 dark:stroke-white/5"
+            strokeWidth="6"
+            fill="transparent"
+          />
+          <circle
+            cx="72"
+            cy="72"
+            r="58"
+            className="stroke-accent-mustard"
+            strokeWidth="6"
+            fill="transparent"
+            strokeDasharray="364.4"
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            style={{ transition: 'stroke-dashoffset 0.1s linear' }}
+          />
+        </svg>
+
+        {/* Inner timer value */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center space-y-1">
+          <span className="text-[10px] font-bold text-accent-mustard font-outfit uppercase tracking-widest animate-pulse">
+            تحليل ذكي
+          </span>
+          <span className="text-3xl font-black text-primary-dark dark:text-white font-outfit tracking-tighter">
+            {formatTime(elapsedTime)}
+          </span>
+          <span className="text-[10px] font-bold text-primary-dark/40 dark:text-white/40 font-cairo">
+            الوقت المنقضي
+          </span>
+        </div>
+      </div>
+
+      {/* Dynamic Status Title */}
+      <div className="space-y-1.5">
+        <h4 className="text-base font-extrabold text-primary-dark dark:text-white font-cairo">
+          جاري تشخيص العينة...
+        </h4>
+        <div className="flex justify-center items-center gap-1.5 text-xs text-accent-mustard font-cairo font-bold">
+          <span className="w-2 h-2 rounded-full bg-accent-mustard animate-ping" />
+          <span>
+            {elapsedTime < 4 ? "جاري قراءة تفاصيل الأوراق..." : 
+             elapsedTime < 8 ? "مقارنة الأعراض بقاعدة البيانات..." : 
+             elapsedTime < 12 ? "تحليل نمو النبات وظروف التربة..." : 
+             elapsedTime < 16 ? "توليد خطة العلاج والتوصيات..." : 
+             "اللمسات الأخيرة للتقرير الزراعي..."}
+          </span>
+        </div>
+      </div>
+
+      {/* Quote Carousel */}
+      <div className="w-full border-t border-primary-dark/5 dark:border-white/5 pt-6 space-y-3">
+        <span className="text-[10px] font-black text-accent-mustard uppercase tracking-[0.15em] font-cairo block">
+          معلومة زراعية ملهمة
+        </span>
+        <div className="min-h-[70px] flex items-center justify-center px-2">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={currentQuoteIndex}
+              initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+              transition={{ duration: 0.4 }}
+              className="text-xs sm:text-sm text-primary-dark/70 dark:text-white/70 font-cairo font-semibold leading-relaxed"
+            >
+              "{quotes[currentQuoteIndex]}"
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 
 const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
   const [previews, setPreviews] = useState([]);
@@ -325,18 +456,33 @@ const UploadArea = React.forwardRef(({ onAnalyze, loading }, ref) => {
             </motion.div>
           </motion.div>
  
-          <div className="lg:col-span-4 space-y-6 lg:space-y-10 py-6 lg:py-10 border-t-2 lg:border-t-0 lg:border-e-2 border-primary-dark/5 dark:border-white/5 pt-10 lg:pt-0 lg:pe-10 pe-0">
-            {editorialSteps.map((step, i) => (
-              <div key={i} className="text-right space-y-2 relative group">
-                <span className="text-4xl md:text-6xl font-black font-outfit text-accent-mustard opacity-10 absolute -top-5 -left-3 group-hover:opacity-20 transition-opacity">
-                  {step.num}
-                </span>
-                <h4 className="text-lg sm:text-xl md:text-2xl font-black font-cairo text-primary-dark dark:text-white leading-tight relative z-10">
-                  {step.text}
-                </h4>
-                <div className="w-6 h-0.5 bg-accent-mustard/30 group-hover:w-12 transition-all" />
-              </div>
-            ))}
+          <div className="lg:col-span-4 py-6 lg:py-10 border-t-2 lg:border-t-0 lg:border-e-2 border-primary-dark/5 dark:border-white/5 pt-10 lg:pt-0 lg:pe-10 pe-0 w-full flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              {loading ? (
+                <LoadingStateTimerAndCarousel key="timer-carousel" />
+              ) : (
+                <motion.div
+                  key="editorial-steps"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
+                  className="w-full space-y-6 lg:space-y-10"
+                >
+                  {editorialSteps.map((step, i) => (
+                    <div key={i} className="text-right space-y-2 relative group">
+                      <span className="text-4xl md:text-6xl font-black font-outfit text-accent-mustard opacity-10 absolute -top-5 -left-3 group-hover:opacity-20 transition-opacity">
+                        {step.num}
+                      </span>
+                      <h4 className="text-lg sm:text-xl md:text-2xl font-black font-cairo text-primary-dark dark:text-white leading-tight relative z-10">
+                        {step.text}
+                      </h4>
+                      <div className="w-6 h-0.5 bg-accent-mustard/30 group-hover:w-12 transition-all" />
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
