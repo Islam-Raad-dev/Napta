@@ -360,5 +360,5 @@ export const useGemini = () => {
     setLoading(false);
   };
 
-  return { analyzeImage, loading, error, result };
+  return { analyzeImage, loading, error, result, setResult };
 };
