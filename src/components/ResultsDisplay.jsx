@@ -20,10 +20,11 @@ import {
   Sprout,
   Check,
   Calendar,
-  Award
+  Award,
+  RefreshCw
 } from 'lucide-react';
 
-const ResultsDisplay = ({ result, error, analyzedImages }) => {
+const ResultsDisplay = ({ result, error, analyzedImages, onReset }) => {
   const [completedSteps, setCompletedSteps] = useState({});
   const [isExporting, setIsExporting] = useState(false);
   const testRefNumber = useRef(Math.floor(100000 + Math.random() * 900000));
@@ -343,7 +344,7 @@ const ResultsDisplay = ({ result, error, analyzedImages }) => {
         </motion.div>
 
         {/* 4. Categorized Treatment steps and save actions */}
-        {result.status !== 'ليس نبات' && result.status !== 'نباتات مختلفة' && (
+        {result.status !== 'ليس نبات' && result.status !== 'نباتات مختلفة' ? (
           <motion.div variants={itemVariants} className="grid lg:grid-cols-12 gap-5 w-full items-start print:block print:w-full print:space-y-6">
             
             {/* Categorized Treatment Checkboxes */}
@@ -443,8 +444,31 @@ const ResultsDisplay = ({ result, error, analyzedImages }) => {
                 )}
                 <span>{isExporting ? 'جاري توليد التقرير PDF...' : 'حفظ أو تصدير التقرير الطبي'}</span>
               </button>
+
+              {/* Action Button: Reset / New Analysis */}
+              {onReset && (
+                <button
+                  onClick={onReset}
+                  className="w-full py-3 rounded-xl bg-white dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-primary-dark dark:text-white font-bold font-cairo text-xs sm:text-sm shadow-sm hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 border border-primary-dark/10 dark:border-white/10"
+                >
+                  <RefreshCw className="w-4 h-4 text-accent-mustard" />
+                  <span>إجراء تحليل جديد</span>
+                </button>
+              )}
             </div>
           </motion.div>
+        ) : (
+          onReset && (
+            <motion.div variants={itemVariants} className="w-full max-w-md mx-auto pt-4 print:hidden">
+              <button
+                onClick={onReset}
+                className="w-full py-3 rounded-xl bg-accent-mustard hover:bg-accent-mustard/90 text-primary-dark font-bold font-cairo text-xs sm:text-sm shadow-sm hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 border border-accent-mustard/20"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>إجراء تحليل جديد</span>
+              </button>
+            </motion.div>
+          )
         )}
       </motion.div>
 
