@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { 
   AlertCircle, 
   CheckCircle2, 
@@ -23,6 +25,8 @@ import {
 
 const ResultsDisplay = ({ result, error, analyzedImages }) => {
   const [completedSteps, setCompletedSteps] = useState({});
+  const [isExporting, setIsExporting] = useState(false);
+  const testRefNumber = useRef(Math.floor(100000 + Math.random() * 900000));
 
   if (error) {
     return (
@@ -50,6 +54,57 @@ const ResultsDisplay = ({ result, error, analyzedImages }) => {
     month: 'long',
     day: 'numeric'
   });
+
+  const handleSavePDF = async () => {
+    setIsExporting(true);
+    try {
+      const page1Element = document.getElementById('pdf-page-1');
+      const page2Element = document.getElementById('pdf-page-2');
+
+      if (!page1Element) {
+        throw new Error("لم يتم العثور على الصفحة الأولى من التقرير.");
+      }
+
+      // Small delay to ensure any rendered styles are fully updated
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+
+      // Capture Page 1
+      const canvas1 = await html2canvas(page1Element, {
+        scale: 2.5, // Crisp, high-definition canvas capture
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+      const imgData1 = canvas1.toDataURL('image/jpeg', 1.0);
+      pdf.addImage(imgData1, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+      // Capture and add Page 2 if it exists
+      if (page2Element) {
+        const canvas2 = await html2canvas(page2Element, {
+          scale: 2.5,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+        const imgData2 = canvas2.toDataURL('image/jpeg', 1.0);
+        pdf.addPage();
+        pdf.addImage(imgData2, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      }
+
+      const safePlantName = (result.plant_name || 'report').replace(/\s+/g, '-');
+      pdf.save(`napta-diagnostic-report-${safePlantName}.pdf`);
+    } catch (err) {
+      console.error("خطأ في تصدير التقرير PDF:", err);
+      alert("عذراً، تعذر تصدير التقرير الطبي بصيغة PDF. يرجى المحاولة مرة أخرى.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
 
   const toggleStep = (stepId) => {
     setCompletedSteps(prev => ({
@@ -375,13 +430,18 @@ const ResultsDisplay = ({ result, error, analyzedImages }) => {
                 </div>
               </div>
 
-              {/* Action Button: Print */}
+              {/* Action Button: Save/Export PDF */}
               <button
-                onClick={() => window.print()}
-                className="w-full py-3 rounded-xl bg-accent-mustard hover:bg-accent-mustard/90 text-primary-dark font-bold font-cairo text-xs sm:text-sm shadow-sm hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 border border-accent-mustard/20"
+                onClick={handleSavePDF}
+                disabled={isExporting}
+                className="w-full py-3 rounded-xl bg-accent-mustard hover:bg-accent-mustard/90 text-primary-dark font-bold font-cairo text-xs sm:text-sm shadow-sm hover:scale-102 active:scale-98 transition-all flex items-center justify-center gap-2 border border-accent-mustard/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Printer className="w-4 h-4" />
-                <span>حفظ أو تصدير التقرير الطبي</span>
+                {isExporting ? (
+                  <div className="w-4 h-4 border-2 border-primary-dark/30 border-t-primary-dark rounded-full animate-spin" />
+                ) : (
+                  <Printer className="w-4 h-4" />
+                )}
+                <span>{isExporting ? 'جاري توليد التقرير PDF...' : 'حفظ أو تصدير التقرير الطبي'}</span>
               </button>
             </div>
           </motion.div>
@@ -405,6 +465,303 @@ const ResultsDisplay = ({ result, error, analyzedImages }) => {
             <p className="font-bold text-slate-700 print:text-white/70 mt-2 text-xs">رقم الفحص: #{Math.floor(100000 + Math.random() * 900000)}</p>
           </div>
         </div>
+      </div>
+
+      {/* ================= OFF-SCREEN PDF EXPORT TEMPLATE ================= */}
+      <div 
+        id="napta-pdf-report"
+        style={{
+          position: 'fixed',
+          left: '-9999px',
+          top: 0,
+          width: '794px',
+          zIndex: -9999
+        }}
+      >
+        {/* ================= PAGE 1 ================= */}
+        <div 
+          id="pdf-page-1"
+          style={{
+            width: '794px',
+            height: '1123px', // Exact A4 Height at 96 DPI
+            backgroundColor: '#ffffff',
+            padding: '45px',
+            boxSizing: 'border-box',
+            direction: 'rtl',
+            textAlign: 'right',
+            fontFamily: "'Cairo', sans-serif",
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            position: 'relative'
+          }}
+        >
+          <div>
+            {/* Header Block */}
+            <div style={{
+              background: 'linear-gradient(135deg, #1b4332, #2d6a4f)',
+              borderRadius: '16px',
+              padding: '24px',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '24px',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
+            }}>
+              <div style={{ flexGrow: 1 }}>
+                <h1 style={{ fontSize: '24px', fontWeight: '900', margin: '0 0 4px 0', color: '#e1ad01' }}>
+                  منصة نبتة الزراعية الذكية
+                </h1>
+                <p style={{ fontSize: '11px', opacity: 0.8, margin: 0 }}>
+                  التقرير الفني لتشخيص صحة النبات بالمجهر الرقمي
+                </p>
+              </div>
+              <div style={{ textAlign: 'left', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                <span style={{ fontSize: '32px', marginBottom: '4px', display: 'block' }}>🌿</span>
+                <span style={{
+                  background: 'rgba(225, 173, 1, 0.2)',
+                  color: '#e1ad01',
+                  border: '1px solid rgba(225, 173, 1, 0.4)',
+                  fontSize: '9px',
+                  fontWeight: '800',
+                  padding: '3px 8px',
+                  borderRadius: '99px',
+                  display: 'inline-block'
+                }}>
+                  تقرير طبي معتمد بالذكاء الاصطناعي
+                </span>
+              </div>
+            </div>
+
+            {/* Metadata Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '16px',
+              marginBottom: '24px'
+            }}>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 16px' }}>
+                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                  اسم الفحص والنبات:
+                </span>
+                <span style={{ fontSize: '16px', color: '#0f172a', fontWeight: '900' }}>
+                  {result.plant_name}
+                </span>
+              </div>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 16px' }}>
+                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                  التصنيف العلمي للنبات:
+                </span>
+                <span style={{ fontSize: '14px', color: '#2d6a4f', fontWeight: '800', fontStyle: 'italic', fontFamily: "'Outfit', sans-serif" }}>
+                  {result.scientific_name}
+                </span>
+              </div>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 16px' }}>
+                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                  تاريخ إصدار التقرير:
+                </span>
+                <span style={{ fontSize: '14px', color: '#0f172a', fontWeight: '800' }}>
+                  {todayDate}
+                </span>
+              </div>
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '12px 16px' }}>
+                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block', marginBottom: '4px' }}>
+                  حالة النبات الصحية والدقة:
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{
+                    fontSize: '13px',
+                    fontWeight: '900',
+                    color: result.status === 'سليم' ? '#16a34a' : '#dc2626'
+                  }}>
+                    {result.status === 'سليم' ? 'سليم ومعافى' : result.status === 'ليس نبات' || result.status === 'نباتات مختلفة' ? result.status : 'يحتاج رعاية فورية'}
+                  </span>
+                  <span style={{ background: '#e2e8f0', fontSize: '10px', fontWeight: '800', padding: '2px 6px', borderRadius: '4px', color: '#334155' }}>
+                    {result.confidence} دقة
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Uploaded Images Section */}
+            {analyzedImages && analyzedImages.length > 0 && (
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '14px', color: '#1b4332' }}>📸</span>
+                  <h3 style={{ fontSize: '14px', fontWeight: '800', color: '#1b4332', margin: 0 }}>
+                    الصور واللقطات التي تم فحصها
+                  </h3>
+                </div>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: analyzedImages.length === 1 ? '1fr' : analyzedImages.length === 2 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
+                  gap: '12px',
+                  justifyContent: 'center'
+                }}>
+                  {analyzedImages.map((img, idx) => (
+                    <div key={idx} style={{
+                      position: 'relative',
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      aspectRatio: '4/3',
+                      border: '2px solid #e2e8f0',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+                    }}>
+                      <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '6px',
+                        right: '6px',
+                        background: 'rgba(0,0,0,0.6)',
+                        color: '#ffffff',
+                        fontSize: '9px',
+                        padding: '2px 6px',
+                        borderRadius: '6px',
+                        fontWeight: '700'
+                      }}>
+                        لقطة {idx + 1}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Diagnosis Section */}
+            <div style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '16px', padding: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #e7e5e4', paddingBottom: '8px', marginBottom: '12px' }}>
+                <span style={{ fontSize: '14px', color: '#1b4332' }}>🔬</span>
+                <h3 style={{ fontSize: '14px', fontWeight: '800', color: '#1b4332', margin: 0 }}>
+                  تقرير الفحص المجهري والتشخيص الدقيق
+                </h3>
+              </div>
+              <p style={{ fontSize: '12.5px', color: '#292524', fontWeight: '600', lineHeight: '1.65', margin: 0, textAlign: 'justify', whiteSpace: 'pre-line' }}>
+                {result.diagnosis}
+              </p>
+            </div>
+          </div>
+
+          {/* Footer block (only shown here on Page 1 if it's a 1-page document) */}
+          {(result.status === 'ليس نبات' || result.status === 'نباتات مختلفة' || categorizedSteps.length === 0) && (
+            <div style={{
+              borderTop: '1px solid #e2e8f0',
+              paddingTop: '15px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div>
+                <p style={{ fontSize: '9px', color: '#94a3b8', margin: '0 0 2px 0' }}>الجهة المصدرة للتقرير</p>
+                <p style={{ fontSize: '11px', color: '#1e293b', fontWeight: '800', margin: 0 }}>
+                  منصة نبتة الرقمية بالذكاء الاصطناعي
+                </p>
+              </div>
+              <div style={{ border: '2px dashed rgba(225,173,1,0.6)', padding: '4px 10px', borderRadius: '6px' }}>
+                <span style={{ fontSize: '9px', fontWeight: '900', color: '#e1ad01' }}>تقرير معتمد إلكترونياً</span>
+              </div>
+              <div style={{ textAlign: 'left' }}>
+                <p style={{ fontSize: '9px', color: '#94a3b8', margin: '0 0 2px 0' }}>رقم الفحص المرجعي</p>
+                <p style={{ fontSize: '11px', color: '#475569', fontWeight: '800', margin: 0, fontFamily: "'Outfit', sans-serif" }}>
+                  #REF-{testRefNumber.current}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ================= PAGE 2 ================= */}
+        {result.status !== 'ليس نبات' && result.status !== 'نباتات مختلفة' && categorizedSteps.length > 0 && (
+          <div 
+            id="pdf-page-2"
+            style={{
+              width: '794px',
+              height: '1123px', // Exact A4 Height
+              backgroundColor: '#ffffff',
+              padding: '45px',
+              boxSizing: 'border-box',
+              direction: 'rtl',
+              textAlign: 'right',
+              fontFamily: "'Cairo', sans-serif",
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              position: 'relative',
+              marginTop: '40px' // Offset spacing in off-screen render
+            }}
+          >
+            <div>
+              {/* Mini Brand Header for Page 2 */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderBottom: '2px solid #2d6a4f',
+                paddingBottom: '10px',
+                marginBottom: '24px'
+              }}>
+                <span style={{ fontSize: '14px', fontWeight: '900', color: '#2d6a4f' }}>توصيات الخطة العلاجية والوقائية المعتمدة - تابع للتقرير</span>
+                <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '700' }}>{result.plant_name} ({result.scientific_name})</span>
+              </div>
+
+              {/* Treatment Instructions Checklist */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {categorizedSteps.map((step, idx) => (
+                  <div key={idx} style={{ 
+                    display: 'flex', 
+                    alignItems: 'start', 
+                    gap: '12px',
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '12px',
+                    padding: '12px 16px'
+                  }}>
+                    <span style={{
+                      fontSize: '10px',
+                      background: 'linear-gradient(135deg, #1b4332, #2d6a4f)',
+                      color: '#ffffff',
+                      fontWeight: '800',
+                      padding: '3px 8px',
+                      borderRadius: '6px',
+                      marginTop: '2px',
+                      flexShrink: 0
+                    }}>
+                      {step.title}
+                    </span>
+                    <p style={{ fontSize: '12.5px', color: '#1e293b', fontWeight: '600', lineHeight: '1.6', margin: 0 }}>
+                      {step.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer block */}
+            <div style={{
+              borderTop: '1px solid #e2e8f0',
+              paddingTop: '15px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div>
+                <p style={{ fontSize: '9px', color: '#94a3b8', margin: '0 0 2px 0' }}>الجهة المصدرة للتقرير</p>
+                <p style={{ fontSize: '11px', color: '#1e293b', fontWeight: '800', margin: 0 }}>
+                  منصة نبتة الرقمية بالذكاء الاصطناعي
+                </p>
+              </div>
+              <div style={{ border: '2px dashed rgba(225,173,1,0.6)', padding: '4px 10px', borderRadius: '6px' }}>
+                <span style={{ fontSize: '9px', fontWeight: '900', color: '#e1ad01' }}>تقرير معتمد إلكترونياً</span>
+              </div>
+              <div style={{ textAlign: 'left' }}>
+                <p style={{ fontSize: '9px', color: '#94a3b8', margin: '0 0 2px 0' }}>رقم الفحص المرجعي</p>
+                <p style={{ fontSize: '11px', color: '#475569', fontWeight: '800', margin: 0, fontFamily: "'Outfit', sans-serif" }}>
+                  #REF-{testRefNumber.current}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
