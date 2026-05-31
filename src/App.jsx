@@ -11,7 +11,7 @@ import FAQPage from './components/FAQPage'
 import { useGemini } from './hooks/useGemini'
 
 function App() {
-  const { analyzeImage, loading, error, result } = useGemini();
+  const { analyzeImage, loading, error, result, setResult } = useGemini();
   const uploadRef = useRef(null);
 
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -46,13 +46,27 @@ function App() {
   };
 
   const scrollToUpload = () => {
+    const wasResult = !!result;
+    if (wasResult) {
+      setResult(null);
+      setAnalyzedImages([]);
+    }
+
+    const performScroll = () => {
+      if (uploadRef.current) {
+        uploadRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
     if (currentPage !== 'home') {
       setCurrentPage('home');
-      setTimeout(() => {
-        if (uploadRef.current) uploadRef.current.scrollIntoView({ behavior: 'smooth' });
-      }, 150);
-    } else if (uploadRef.current) {
-      uploadRef.current.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(performScroll, wasResult ? 200 : 150);
+    } else {
+      if (wasResult) {
+        setTimeout(performScroll, 100);
+      } else {
+        performScroll();
+      }
     }
   };
 
@@ -83,14 +97,25 @@ function App() {
           <>
             <Hero onStart={scrollToUpload} onDemoClick={() => setCurrentPage('demo')} />
             
-            <div className="relative z-10 pt-12 md:pt-20">
-              <UploadArea ref={uploadRef} onAnalyze={handleAnalyze} loading={loading} />
-            </div>
+            {!result && (
+              <div className="relative z-10 pt-12 md:pt-20">
+                <UploadArea ref={uploadRef} onAnalyze={handleAnalyze} loading={loading} />
+              </div>
+            )}
 
-            
-            <div id="results" className="container mx-auto px-8 max-w-6xl py-8">
-              <ResultsDisplay result={result} error={error} analyzedImages={analyzedImages} />
-            </div>
+            {(result || error) && (
+              <div id="results" className="container mx-auto px-8 max-w-6xl py-8">
+                <ResultsDisplay 
+                  result={result} 
+                  error={error} 
+                  analyzedImages={analyzedImages} 
+                  onReset={() => {
+                    setResult(null);
+                    setAnalyzedImages([]);
+                  }}
+                />
+              </div>
+            )}
           </>
         )}
         {currentPage === 'features' && <FeaturesPage />}
