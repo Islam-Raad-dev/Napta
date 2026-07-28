@@ -22,7 +22,7 @@ const Hero = ({ onStart, onDemoClick }) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);           
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       motionQuery.removeEventListener("change", handleMotionChange);
