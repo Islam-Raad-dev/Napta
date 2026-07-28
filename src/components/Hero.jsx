@@ -11,7 +11,7 @@ const Hero = ({ onStart, onDemoClick }) => {
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
     setIsTouch(isTouchDevice);
 
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");    
     setPrefersReducedMotion(motionQuery.matches);
     const handleMotionChange = (e) => setPrefersReducedMotion(e.matches);
     motionQuery.addEventListener("change", handleMotionChange);
