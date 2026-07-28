@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Camera, RotateCcw, Check, Sparkles, 
   Activity, CheckCircle2, AlertTriangle, Gauge, Zap
-} from 'lucide-react';
+} from 'lucide-react';    
 
 const CameraCapture = ({ onCapture, onClose }) => {
   const videoRef = useRef(null);
