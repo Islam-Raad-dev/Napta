@@ -24,7 +24,7 @@ const PrivacyPolicyPage = () => {
             سياسة <span className="text-accent-mustard">الخصوصية</span>
           </h1>
           <p className="text-lg md:text-xl text-primary-dark/70 dark:text-white/70 max-w-2xl mx-auto font-cairo">
-            في منصة نبتة، نعتبر خصوصيتك أولوية. نلتزم بأعلى معايير الحماية لضمان تجربة آمنة وهادئة لكل مزارع يثق بنا.
+            في منصة نبتة، نعتبر خصوصيتك أولوية. نلتزم بأعلى معايير الحماية لضمان تجربة آمنة وهادئة لكل مزارع يثق بناتامام
           </p>
         </motion.div>
 
